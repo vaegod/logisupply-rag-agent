@@ -1,0 +1,43 @@
+[
+  {
+    "order_id": "JD2026001",
+    "customer_name": "张三",
+    "status": "运输中",
+    "current_node": "北京通州分拨中心",
+    "expected_arrival": "2026-05-06",
+    "exception_type": "无异常",
+    "product_type": "普通商品",
+    "last_update": "2026-05-03 10:30:00"
+  },
+  {
+    "order_id": "JD2026002",
+    "customer_name": "李四",
+    "status": "延迟",
+    "current_node": "华北干线运输节点",
+    "expected_arrival": "2026-05-07",
+    "exception_type": "干线运输延迟",
+    "product_type": "普通商品",
+    "last_update": "2026-05-03 09:15:00"
+  },
+  {
+    "order_id": "JD2026003",
+    "customer_name": "王五",
+    "status": "异常",
+    "current_node": "冷链仓储中心",
+    "expected_arrival": "2026-05-04",
+    "exception_type": "温度异常报警",
+    "product_type": "冷链商品",
+    "last_update": "2026-05-03 11:20:00"
+  },
+  {
+    "order_id": "JD2026004",
+    "customer_name": "赵六",
+    "status": "异常",
+    "current_node": "末端配送站",
+    "expected_arrival": "2026-05-05",
+    "exception_type": "货物外包装破损",
+    "product_type": "电子产品",
+    "last_update": "2026-05-03 12:00:00"
+  }
+]
+
