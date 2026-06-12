@@ -9,6 +9,7 @@ from urllib import error, request
 
 DIFY_API_BASE = os.getenv("DIFY_API_BASE", "https://api.dify.ai/v1")
 DIFY_API_KEY = os.getenv("DIFY_API_KEY")
+USER_AGENT = "LogiSupply-RAG-Agent-Eval/1.0"
 
 BASE_DIR = Path(__file__).parent
 INPUT_FILE = BASE_DIR / "test_questions.csv"
@@ -35,12 +36,29 @@ def ask_dify(question: str) -> str:
         headers={
             "Authorization": f"Bearer {DIFY_API_KEY}",
             "Content-Type": "application/json",
+            "User-Agent": USER_AGENT,
         },
         method="POST",
     )
 
-    with request.urlopen(req, timeout=60) as response:
-        data = json.loads(response.read().decode("utf-8"))
+    try:
+        with request.urlopen(req, timeout=60) as response:
+            data = json.loads(response.read().decode("utf-8"))
+    except error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="replace")
+        try:
+            payload = json.loads(detail)
+            message = payload.get("message") or payload.get("code") or detail
+        except json.JSONDecodeError:
+            message = detail or str(exc)
+
+        if exc.code == 400 and "Workflow not published" in message:
+            raise RuntimeError(
+                "Dify 应用尚未发布。请先在 Dify Chatflow 中点击“发布”，再运行评测脚本。"
+            ) from exc
+
+        raise RuntimeError(f"Dify API 请求失败：HTTP {exc.code} - {message}") from exc
+
     return data.get("answer", "")
 
 
@@ -110,4 +128,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

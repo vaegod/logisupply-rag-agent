@@ -82,7 +82,9 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 接口列表：
 
 - `GET /health`
+- `GET /orders?order_id=...`
 - `GET /orders/{order_id}`
+- `POST /orders/query`
 - `POST /orders/analyze`
 
 启动后可访问：
@@ -107,6 +109,19 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 - [dify_config_notes.md](/D:/简历项目/dify/dify_config_notes.md)
 - [chatflow_setup_checklist.md](/D:/简历项目/dify/chatflow_setup_checklist.md)
 
+当前联调中实际验证通过的配置：
+
+- 知识库问答分支：`Hybrid Search`、`Top K = 5`、`Score Threshold = 0.35`
+- 异常处理建议分支：`Hybrid Search`、`Top K = 5`、`Score Threshold = 0.35`、`Rerank = Qwen/Qwen3-Reranker-8B`
+- 订单查询与异常处理分支的 HTTP 节点均使用本地 `FastAPI` + 临时公网隧道联调
+- 订单查询分支最终推荐使用 `POST /orders/query` + JSON Body，避免 Dify 在 GET URL 路径/查询参数拼接时出现兼容问题
+
+当前已验证通过的问题：
+
+- `冷链运输温度异常怎么办？`
+- `订单 JD2026001 到哪了？`
+- `订单 JD2026002 延迟了怎么处理？`
+
 ## 评测方法
 
 仓库提供：
@@ -124,7 +139,13 @@ python rag_eval.py
 
 评测结果默认输出到 `evaluation/eval_result.csv`。
 
-## 截图清单
+说明：
+
+- 当前仓库未保存 `DIFY_API_KEY`，因此评测脚本需要在你本地手动注入 Key 后运行。
+- 运行 `rag_eval.py` 前，请先在 Dify 中发布当前 Chatflow 应用；未发布状态下，Dify API 会返回 `Workflow not published`。
+- 当 Dify Prompt 或检索参数调整后，建议重新跑一次小样本验证，再批量执行 `rag_eval.py`。
+
+## 可选截图清单
 
 建议至少准备以下 6 张截图用于 GitHub 展示与简历说明：
 
@@ -139,4 +160,6 @@ python rag_eval.py
 
 - Dify Cloud 不能直接访问本机 `127.0.0.1`，本地联调建议使用临时公网隧道。
 - 临时隧道地址只用于开发调试，不要写入仓库长期文档的正式接口地址位置。
+- `trycloudflare` 地址失效后，需要同时替换订单查询与异常处理分支中的两个 HTTP URL。
+- Dify 在 HTTP URL、POST Body 和 LLM Prompt 中，优先使用变量插入器，不要依赖手写 `{{...}}` 模板字符串。
 - 每次在 Dify UI 中调整 Prompt、检索参数或节点结构后，记得同步回写到仓库。

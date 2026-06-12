@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
 
 app = FastAPI(
@@ -18,6 +18,10 @@ DATA_FILE = Path(__file__).parent / "orders.json"
 class ExceptionRequest(BaseModel):
     order_id: str
     user_problem: str | None = None
+
+
+class OrderQueryRequest(BaseModel):
+    order_id: str
 
 
 def load_orders() -> list[dict]:
@@ -47,6 +51,16 @@ def get_order(order_id: str) -> dict:
         )
 
     return {"found": True, "order": order}
+
+
+@app.get("/orders")
+def get_order_by_query(order_id: str = Query(..., description="订单号，例如 JD2026001")) -> dict:
+    return get_order(order_id)
+
+
+@app.post("/orders/query")
+def query_order(req: OrderQueryRequest) -> dict:
+    return get_order(req.order_id)
 
 
 @app.post("/orders/analyze")
@@ -83,4 +97,3 @@ def analyze_order_exception(req: ExceptionRequest) -> dict:
         "suggestion": suggestion,
         "user_problem": req.user_problem,
     }
-

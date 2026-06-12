@@ -136,14 +136,14 @@ Knowledge Retrieval → LLM → Answer
 - 节点名：`检索物流知识库`
 - Query：`sys.query`
 - Knowledge：`物流供应链业务知识库`
-- Top K：`3`
-- Score Threshold：`0.4`
+- Top K：`5`
+- Score Threshold：`0.35`
 - Retrieval Method：`Hybrid Search`
 
 ### LLM_知识问答
 
 - Prompt 来源：`prompts/rag_system_prompt.md`
-- Context 选择：`检索物流知识库.result`
+- Context 选择：优先使用 `检索物流知识库.result`；如果当前版本没有该字段，直接插入 `上下文`
 
 ### Answer
 
@@ -180,17 +180,19 @@ Parameter Extractor → HTTP Request → LLM → Answer
 ### HTTP Request_查询订单
 
 - 节点名：`查询订单接口`
-- Method：`GET`
+- Method：`POST`
 - URL：
 
 ```text
-https://你的临时隧道域名/orders/{{提取订单号.order_id}}
+https://你的临时隧道域名/orders/query
 ```
 
 说明：
 
 - 先在本地启动 `order_api`
 - 再用临时隧道把 `8000` 端口映射到公网
+- 在 `Body` 中传入 JSON，`order_id` 的值使用 Dify 变量插入器选择 `提取订单号.order_id`
+- 订单查询优先使用 POST + JSON Body 方案，避免 Dify 在 GET URL 变量拼接时出现兼容问题
 - 只在 Dify UI 中替换地址，不把真实隧道域名写回仓库
 
 ### LLM_整理订单状态
@@ -245,8 +247,8 @@ https://你的临时隧道域名/orders/analyze
 
 ```json
 {
-  "order_id": "{{提取订单号.order_id}}",
-  "user_problem": "{{sys.query}}"
+  "order_id": "插入 提取订单号.order_id 变量",
+  "user_problem": "插入 sys.query / 用户输入.query 变量"
 }
 ```
 
@@ -262,6 +264,7 @@ https://你的临时隧道域名/orders/analyze
 ### LLM_生成异常处理建议
 
 - Prompt 来源：`prompts/exception_solution_prompt.md`
+- 知识检索结果如未显示为 `result`，直接使用 `上下文` 变量
 
 ### Answer
 
@@ -307,6 +310,7 @@ System Prompt 可使用：
 3. 订单查询分支能正常访问临时隧道地址。
 4. 异常处理分支能同时使用接口结果和 SOP 检索结果。
 5. 所有 Prompt 最新版本都已经同步回仓库。
+6. 如 `trycloudflare` 地址失效，记得同步替换订单查询与异常处理两个 HTTP 节点。
 
 ## 10. 推荐截图顺序
 
@@ -318,4 +322,3 @@ System Prompt 可使用：
 4. `04_order_api_call.png`
 5. `05_exception_solution.png`
 6. `06_eval_result.png`
-

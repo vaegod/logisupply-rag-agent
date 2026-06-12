@@ -21,8 +21,13 @@
 
 | 分支 | Retrieval Method | Top K | Score Threshold |
 |---|---|---:|---:|
-| 知识库问答 | Hybrid Search | 3 | 0.4 |
+| 知识库问答 | Hybrid Search | 5 | 0.35 |
 | 异常处理建议 | Hybrid Search | 5 | 0.35 |
+
+当前联调结论：
+
+- 知识库问答分支在 `Top K = 5`、`Threshold = 0.35` 时，对“冷链运输温度异常怎么办？”的召回明显优于 `Top K = 3`、`Threshold = 0.4`。
+- 异常处理建议分支在 `Top K = 5`、`Threshold = 0.35`、`Rerank` 开启后，能稳定结合订单接口和 SOP 生成结构化建议。
 
 ## 2. Question Classifier 配置
 
@@ -88,7 +93,10 @@ JD2026003 出现温度异常怎么办？
 开发联调时使用临时公网隧道暴露本地 `8000` 端口，并在 Dify 中替换以下 URL：
 
 - 查询订单：
-  - `https://你的临时隧道域名/orders/{{提取订单号.order_id}}`
+  - 推荐：`https://你的临时隧道域名/orders/query`
+  - Method：`POST`
+  - Body 中传入 `order_id`
+  - 兼容方案：`GET /orders?order_id=...` 与 `GET /orders/{order_id}` 仍可用，但 Dify Cloud 某些版本在 GET URL 变量拼接时容易引入兼容问题
 - 分析订单异常：
   - `https://你的临时隧道域名/orders/analyze`
 
@@ -96,15 +104,43 @@ JD2026003 出现温度异常怎么办？
 
 - 不要把临时隧道域名提交到仓库。
 - Dify Cloud 无法直接访问本机 `127.0.0.1:8000`。
+- 临时隧道失效后，Dify 中两个 HTTP 节点的 URL 都要一起替换成新的域名。
+- 在 URL、Body 和 LLM 提示词中，优先使用 Dify 变量插入器，不要依赖手写 `{{...}}` 模板字符串，尤其是 HTTP 节点的 URL 和 JSON Body。
 - 如果后续切换为正式部署地址，只替换 Dify UI 中的节点地址，并同步更新本文档说明。
 
-## 4. Prompt 配置来源
+### POST /orders/analyze Body 参考
+
+```json
+{
+  "order_id": "插入 提取订单号.order_id 变量",
+  "user_problem": "插入 用户输入.query 变量"
+}
+```
+
+### POST /orders/query Body 参考
+
+```json
+{
+  "order_id": "插入 提取订单号.order_id 变量"
+}
+```
+
+## 4. Dify 变量使用说明
+
+- 知识检索节点在部分版本中输出字段名为 `result`，在部分版本中显示为 `上下文`。如果变量列表中没有 `result`，直接使用 `上下文`。
+- `直接回复` 节点推荐只输出上一个 LLM 节点的 `text`，不要在 `直接回复` 中手写条件模板或 JSON 字段拼接。
+- 订单查询和异常处理分支中，LLM 节点的 USER 消息需要使用变量插入器插入：
+  - `用户输入.query`
+  - `HTTP 请求.body`
+  - `上下文`（异常处理分支）
+
+## 5. Prompt 配置来源
 
 - 知识库问答：`prompts/rag_system_prompt.md`
 - 订单查询：`prompts/order_query_prompt.md`
 - 异常处理建议：`prompts/exception_solution_prompt.md`
 
-## 5. 应用设置
+## 6. 应用设置
 
 - 建议开启引用来源展示
 - 发布前至少测试以下问题：
@@ -112,3 +148,8 @@ JD2026003 出现温度异常怎么办？
   - `订单 JD2026001 到哪了？`
   - `订单 JD2026002 延迟了怎么处理？`
 
+## 7. 当前已验证通过的问题
+
+- `冷链运输温度异常怎么办？`
+- `订单 JD2026001 到哪了？`
+- `订单 JD2026002 延迟了怎么处理？`

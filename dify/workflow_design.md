@@ -70,18 +70,20 @@ Question Classifier
 - `Knowledge Retrieval`
   - Query：`sys.query`
   - Knowledge：`物流供应链业务知识库`
-  - Top K：`3`
-  - Score Threshold：`0.4`
+  - Top K：`5`
+  - Score Threshold：`0.35`
 - `LLM_知识问答`
   - Prompt 来源：`prompts/rag_system_prompt.md`
+  - 如果当前 Dify 版本未暴露 `result` 字段，直接在提示词中插入 `上下文`
 
 ### 订单状态查询分支
 
 - `Parameter Extractor_订单号`
   - 必填参数：`order_id`
 - `HTTP Request_查询订单`
-  - Method：`GET`
-  - URL：`https://你的临时隧道域名/orders/{{提取订单号.order_id}}`
+  - Method：`POST`
+  - URL：`https://你的临时隧道域名/orders/query`
+  - Body：JSON + 变量插入器传入 `order_id`
 - `LLM_整理订单状态`
   - Prompt 来源：`prompts/order_query_prompt.md`
 
@@ -92,6 +94,7 @@ Question Classifier
 - `HTTP Request_分析订单异常`
   - Method：`POST`
   - URL：`https://你的临时隧道域名/orders/analyze`
+  - Body 使用 JSON + 变量插入器传入 `order_id` 和 `user_problem`
 - `Knowledge Retrieval_异常SOP`
   - Query：`sys.query`
   - Knowledge：`物流供应链业务知识库`
@@ -99,6 +102,7 @@ Question Classifier
   - Score Threshold：`0.35`
 - `LLM_生成异常处理建议`
   - Prompt 来源：`prompts/exception_solution_prompt.md`
+  - 知识检索输出如显示为 `上下文`，直接引用该变量
 
 ### 其他问题分支
 
@@ -114,4 +118,3 @@ Question Classifier
 - 订单状态查询：`{{LLM_整理订单状态.text}}`
 - 异常处理建议：`{{LLM_生成异常处理建议.text}}`
 - 其他问题：`{{LLM_兜底回复.text}}`
-
