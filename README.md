@@ -145,17 +145,6 @@ python rag_eval.py
 - 运行 `rag_eval.py` 前，请先在 Dify 中发布当前 Chatflow 应用；未发布状态下，Dify API 会返回 `Workflow not published`。
 - 当 Dify Prompt 或检索参数调整后，建议重新跑一次小样本验证，再批量执行 `rag_eval.py`。
 
-## 可选截图清单
-
-建议至少准备以下 6 张截图用于 GitHub 展示与简历说明：
-
-- `01_knowledge_base.png`：Dify 知识库上传页面
-- `02_chatflow_canvas.png`：Dify Chatflow 工作流画布
-- `03_rag_answer_with_citation.png`：知识库问答与引用来源
-- `04_order_api_call.png`：订单查询结果
-- `05_exception_solution.png`：异常处理建议
-- `06_eval_result.png`：评测输出或结果表
-
 ## 后续联调建议
 
 - Dify Cloud 不能直接访问本机 `127.0.0.1`，本地联调建议使用临时公网隧道。
