@@ -1,6 +1,6 @@
 # Dify Chatflow 搭建清单
 
-本清单面向首版联调，默认使用 `Dify Cloud + 本地 FastAPI + 临时公网隧道` 方案。建议边搭边截图，后续可以直接放进 `screenshots/`。
+本清单用于复现 Dify Chatflow 配置。订单接口需要提供 Dify 可访问的 HTTP 地址；本地开发可通过临时隧道暴露 `order_api` 的 `8000` 端口，长期演示建议使用稳定公网地址。
 
 ## 1. 创建知识库
 
@@ -39,7 +39,7 @@ Studio → Create Application → Chatflow
 物流供应链智能助手
 ```
 
-创建后先不要急着发布，先把所有节点连起来再逐个调试。
+创建后先完成节点编排，再逐个调试并发布。
 
 ## 3. 配置 Start 节点
 
@@ -184,13 +184,13 @@ Parameter Extractor → HTTP Request → LLM → Answer
 - URL：
 
 ```text
-https://你的临时隧道域名/orders/query
+https://<order-api-domain>/orders/query
 ```
 
 说明：
 
-- 先在本地启动 `order_api`
-- 再用临时隧道把 `8000` 端口映射到公网
+- 本地开发时先启动 `order_api`
+- 如使用 Dify Cloud，需要将 `8000` 端口映射为 Dify 可访问的公网地址
 - 在 `Body` 中传入 JSON，`order_id` 的值使用 Dify 变量插入器选择 `提取订单号.order_id`
 - 订单查询优先使用 POST + JSON Body 方案，避免 Dify 在 GET URL 变量拼接时出现兼容问题
 - 只在 Dify UI 中替换地址，不把真实隧道域名写回仓库
@@ -232,7 +232,7 @@ Parameter Extractor → HTTP Request → Knowledge Retrieval → LLM → Answer
 - URL：
 
 ```text
-https://你的临时隧道域名/orders/analyze
+https://<order-api-domain>/orders/analyze
 ```
 
 - Headers：
@@ -310,9 +310,9 @@ System Prompt 可使用：
 3. 订单查询分支能正常访问临时隧道地址。
 4. 异常处理分支能同时使用接口结果和 SOP 检索结果。
 5. 所有 Prompt 最新版本都已经同步回仓库。
-6. 如 `trycloudflare` 地址失效，记得同步替换订单查询与异常处理两个 HTTP 节点。
+6. 如接口域名变化，需要同步替换订单查询与异常处理两个 HTTP 节点。
 
-## 10. 推荐截图顺序
+## 10. 项目展示截图清单
 
 建议按以下顺序保存截图：
 

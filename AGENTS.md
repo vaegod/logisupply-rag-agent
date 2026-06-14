@@ -46,7 +46,7 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 运行评测脚本：
 
 ```powershell
-$env:DIFY_API_KEY="你的 Dify API Key"
+$env:DIFY_API_KEY="<DIFY_API_KEY>"
 cd evaluation
 python rag_eval.py
 ```
@@ -76,4 +76,3 @@ python rag_eval.py
 - 提交信息建议使用简洁中文动词短语，例如：`初始化项目骨架`、`补充订单接口`、`完善 Dify 配置说明`。
 - 每次提交尽量围绕单一主题，避免把文档、代码和截图的大量不相关改动混在一起。
 - 提交前确认没有把密钥、个人账号信息、临时隧道地址和无关缓存文件带入仓库。
-

@@ -26,4 +26,4 @@ curl "http://127.0.0.1:8000/orders?order_id=JD2026001"
 curl -Method POST -Uri http://127.0.0.1:8000/orders/query -ContentType application/json -Body '{"order_id":"JD2026001"}'
 ```
 
-联调 Dify Cloud 时，请通过临时公网隧道把本地 `8000` 端口暴露出去，并在 Dify 的 HTTP Request 节点中替换占位 URL。
+Dify Cloud 需要访问公网可达的接口地址。本地开发可通过临时隧道暴露 `8000` 端口，并在 Dify 的 `HTTP Request` 节点中使用该地址；长期演示建议部署到稳定公网服务。

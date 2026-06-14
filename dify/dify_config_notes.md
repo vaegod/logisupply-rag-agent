@@ -88,25 +88,25 @@ JD2026003 出现温度异常怎么办？
 与物流供应链业务无关，或者问题信息不足，无法判断用户意图。
 ```
 
-## 3. HTTP Request 节点占位
+## 3. HTTP Request 节点配置
 
-开发联调时使用临时公网隧道暴露本地 `8000` 端口，并在 Dify 中替换以下 URL：
+Dify `HTTP Request` 节点需要访问公网可达的订单接口地址。本地开发可通过临时隧道暴露 `order_api` 的 `8000` 端口；长期演示或部署建议使用稳定公网服务地址。
 
 - 查询订单：
-  - 推荐：`https://你的临时隧道域名/orders/query`
+  - 推荐：`https://<order-api-domain>/orders/query`
   - Method：`POST`
   - Body 中传入 `order_id`
   - 兼容方案：`GET /orders?order_id=...` 与 `GET /orders/{order_id}` 仍可用，但 Dify Cloud 某些版本在 GET URL 变量拼接时容易引入兼容问题
 - 分析订单异常：
-  - `https://你的临时隧道域名/orders/analyze`
+  - `https://<order-api-domain>/orders/analyze`
 
 注意：
 
-- 不要把临时隧道域名提交到仓库。
+- 不要把真实临时隧道域名、API Key 或其他敏感配置提交到仓库。
 - Dify Cloud 无法直接访问本机 `127.0.0.1:8000`。
 - 临时隧道失效后，Dify 中两个 HTTP 节点的 URL 都要一起替换成新的域名。
 - 在 URL、Body 和 LLM 提示词中，优先使用 Dify 变量插入器，不要依赖手写 `{{...}}` 模板字符串，尤其是 HTTP 节点的 URL 和 JSON Body。
-- 如果后续切换为正式部署地址，只替换 Dify UI 中的节点地址，并同步更新本文档说明。
+- 如果切换为正式部署地址，需要替换 Dify UI 中的节点地址，并同步更新本文档说明。
 
 ### POST /orders/analyze Body 参考
 

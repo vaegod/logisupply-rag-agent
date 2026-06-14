@@ -82,7 +82,7 @@ Question Classifier
   - 必填参数：`order_id`
 - `HTTP Request_查询订单`
   - Method：`POST`
-  - URL：`https://你的临时隧道域名/orders/query`
+  - URL：`https://<order-api-domain>/orders/query`
   - Body：JSON + 变量插入器传入 `order_id`
 - `LLM_整理订单状态`
   - Prompt 来源：`prompts/order_query_prompt.md`
@@ -93,7 +93,7 @@ Question Classifier
   - 必填参数：`order_id`
 - `HTTP Request_分析订单异常`
   - Method：`POST`
-  - URL：`https://你的临时隧道域名/orders/analyze`
+  - URL：`https://<order-api-domain>/orders/analyze`
   - Body 使用 JSON + 变量插入器传入 `order_id` 和 `user_problem`
 - `Knowledge Retrieval_异常SOP`
   - Query：`sys.query`

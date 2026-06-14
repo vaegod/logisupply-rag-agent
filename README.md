@@ -4,7 +4,7 @@
 
 本项目面向物流、仓储、供应链业务场景，基于 Dify 构建 RAG 知识库问答与 Agent 工作流系统。系统支持物流业务文档问答、订单状态查询、异常订单处理建议生成，并通过自建测试集对问答效果进行评估。
 
-项目首版聚焦业务落地与工程可复现性，重点展示以下能力：
+项目聚焦业务落地与工程可复现性，重点展示以下能力：
 
 - 物流供应链知识库问答
 - 知识库答案引用来源展示
@@ -58,15 +58,13 @@ Question Classifier
 
 ```text
 .
-├── AGENTS.md
 ├── README.md
-├── docs/
-├── order_api/
-├── prompts/
-├── evaluation/
-├── dify/
-├── screenshots/
-└── 基于RAG与Agent工作流的物流供应链知识库问答系统_开发文档.md
+├── docs/          # 物流业务知识库与项目展示文档
+├── order_api/     # FastAPI 订单工具接口
+├── prompts/       # Dify LLM 节点 Prompt
+├── evaluation/    # 测试集与评测脚本
+├── dify/          # Dify 工作流配置说明
+└── screenshots/   # 项目展示截图
 ```
 
 ## FastAPI 订单接口
@@ -105,18 +103,18 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 详细节点说明、Prompt 配置和联调替换项见：
 
-- [workflow_design.md](/D:/简历项目/dify/workflow_design.md)
-- [dify_config_notes.md](/D:/简历项目/dify/dify_config_notes.md)
-- [chatflow_setup_checklist.md](/D:/简历项目/dify/chatflow_setup_checklist.md)
+- [workflow_design.md](dify/workflow_design.md)
+- [dify_config_notes.md](dify/dify_config_notes.md)
+- [chatflow_setup_checklist.md](dify/chatflow_setup_checklist.md)
 
-当前联调中实际验证通过的配置：
+推荐配置与已验证结果：
 
 - 知识库问答分支：`Hybrid Search`、`Top K = 5`、`Score Threshold = 0.35`
 - 异常处理建议分支：`Hybrid Search`、`Top K = 5`、`Score Threshold = 0.35`、`Rerank = Qwen/Qwen3-Reranker-8B`
-- 订单查询与异常处理分支的 HTTP 节点均使用本地 `FastAPI` + 临时公网隧道联调
+- 订单查询与异常处理分支通过 Dify `HTTP Request` 节点调用 `FastAPI` 订单接口
 - 订单查询分支最终推荐使用 `POST /orders/query` + JSON Body，避免 Dify 在 GET URL 路径/查询参数拼接时出现兼容问题
 
-当前已验证通过的问题：
+已验证通过的问题：
 
 - `冷链运输温度异常怎么办？`
 - `订单 JD2026001 到哪了？`
@@ -132,7 +130,7 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 运行方式：
 
 ```powershell
-$env:DIFY_API_KEY="你的 Dify API Key"
+$env:DIFY_API_KEY="<DIFY_API_KEY>"
 cd evaluation
 python rag_eval.py
 ```
@@ -141,14 +139,20 @@ python rag_eval.py
 
 说明：
 
-- 当前仓库未保存 `DIFY_API_KEY`，因此评测脚本需要在你本地手动注入 Key 后运行。
+- 仓库不保存 `DIFY_API_KEY`，运行前需通过环境变量注入。
 - 运行 `rag_eval.py` 前，请先在 Dify 中发布当前 Chatflow 应用；未发布状态下，Dify API 会返回 `Workflow not published`。
 - 当 Dify Prompt 或检索参数调整后，建议重新跑一次小样本验证，再批量执行 `rag_eval.py`。
 
-## 后续联调建议
+## 部署与联调说明
 
-- Dify Cloud 不能直接访问本机 `127.0.0.1`，本地联调建议使用临时公网隧道。
-- 临时隧道地址只用于开发调试，不要写入仓库长期文档的正式接口地址位置。
-- `trycloudflare` 地址失效后，需要同时替换订单查询与异常处理分支中的两个 HTTP URL。
+- Dify Cloud 不能直接访问本机 `127.0.0.1`，订单接口需要使用 Dify 可访问的 HTTP 地址。
+- 本地开发可通过临时隧道暴露 `order_api` 的 `8000` 端口；长期演示建议部署到稳定公网地址。
+- 如接口域名变化，需要同时替换订单查询与异常处理分支中的两个 HTTP URL。
 - Dify 在 HTTP URL、POST Body 和 LLM Prompt 中，优先使用变量插入器，不要依赖手写 `{{...}}` 模板字符串。
-- 每次在 Dify UI 中调整 Prompt、检索参数或节点结构后，记得同步回写到仓库。
+- 每次在 Dify UI 中调整 Prompt、检索参数或节点结构后，应同步回写到仓库。
+
+## 项目展示文档
+
+- [项目展示说明](docs/项目展示说明.md)
+- [项目实现说明](docs/项目实现说明.md)
+- [技术问答](docs/技术问答.md)
