@@ -120,6 +120,42 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 - `订单 JD2026001 到哪了？`
 - `订单 JD2026002 延迟了怎么处理？`
 
+## 项目截图
+
+> HTTP 节点截图中的临时联调域名已做打码处理，仓库不保存真实临时隧道地址。
+
+### 知识库文档
+
+![知识库文档](screenshots/00_knowledge_base.png)
+
+### Chatflow 工作流
+
+![Chatflow 工作流](screenshots/01_chatflow_canvas.png)
+
+### 问题分类器
+
+![问题分类器](screenshots/02_question_classifier.png)
+
+### 知识检索节点
+
+![知识检索节点](screenshots/03_knowledge_retrieval_node.png)
+
+### 订单查询 HTTP 节点
+
+![订单查询 HTTP 节点](screenshots/04_order_http_request_node.png)
+
+### 异常分析 HTTP 节点
+
+![异常分析 HTTP 节点](screenshots/05_exception_http_request_node.png)
+
+### RAG 问答预览
+
+![RAG 问答预览](screenshots/06_rag_preview_answer.png)
+
+### 评测结果汇总
+
+![评测结果汇总](screenshots/07_eval_result_summary.png)
+
 ## 评测方法
 
 仓库提供：
