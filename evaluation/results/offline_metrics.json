@@ -1,0 +1,25 @@
+{
+  "scope": "offline deterministic baseline; not Dify end-to-end quality",
+  "document_count": 10,
+  "retrieval": {
+    "case_count": 25,
+    "recall_at_1": 0.88,
+    "recall_at_3": 1.0,
+    "mrr": 0.9333,
+    "average_latency_ms": 0.5079,
+    "p95_latency_ms": 0.8239
+  },
+  "routing_and_tools": {
+    "case_count": 50,
+    "intent_accuracy": 1.0,
+    "explicit_order_case_count": 24,
+    "order_id_extraction_rate": 1.0,
+    "known_order_tool_success_rate": 1.0
+  },
+  "limitations": [
+    "BM25 runs at document level and does not reproduce Dify chunking or vector retrieval.",
+    "Intent routing is a transparent rule baseline, not Dify Question Classifier output.",
+    "Tool success verifies local synthetic order lookup only; it does not cover a public deployment.",
+    "Generated answer quality still requires a published Dify Chatflow and DIFY_API_KEY."
+  ]
+}

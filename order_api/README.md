@@ -26,4 +26,12 @@ curl "http://127.0.0.1:8000/orders?order_id=JD2026001"
 curl -Method POST -Uri http://127.0.0.1:8000/orders/query -ContentType application/json -Body '{"order_id":"JD2026001"}'
 ```
 
+自动化测试位于仓库根目录 `tests/test_order_api.py`：
+
+```powershell
+cd ..
+pip install -r requirements-dev.txt
+python -m pytest tests/test_order_api.py
+```
+
 Dify Cloud 需要访问公网可达的接口地址。本地开发可通过临时隧道暴露 `8000` 端口，并在 Dify 的 `HTTP Request` 节点中使用该地址；长期演示建议部署到稳定公网服务。

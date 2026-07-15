@@ -1,0 +1,444 @@
+app:
+  description: 物流知识问答、订单查询与异常处理建议 Chatflow 模板
+  icon: 🚚
+  icon_background: '#E4FBCC'
+  mode: advanced-chat
+  name: 物流供应链智能助手
+  use_icon_as_answer_icon: false
+dependencies: []
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      enabled: false
+    opening_statement: 你好，我可以回答物流 SOP、查询演示订单并提供异常处理建议。
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions:
+    - 仓储入库流程包括哪些步骤？
+    - 订单 JD2026001 到哪了？
+    - 订单 JD2026002 延迟了怎么处理？
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - id: start-classifier
+      source: start
+      sourceHandle: source
+      target: classifier
+      targetHandle: target
+    - id: classifier-knowledge
+      source: classifier
+      sourceHandle: knowledge
+      target: retrieve-knowledge
+      targetHandle: target
+    - id: retrieve-knowledge-llm
+      source: retrieve-knowledge
+      sourceHandle: source
+      target: llm-knowledge
+      targetHandle: target
+    - id: llm-knowledge-answer
+      source: llm-knowledge
+      sourceHandle: source
+      target: answer-knowledge
+      targetHandle: target
+    - id: classifier-order
+      source: classifier
+      sourceHandle: order
+      target: extract-order
+      targetHandle: target
+    - id: extract-order-http
+      source: extract-order
+      sourceHandle: source
+      target: http-order
+      targetHandle: target
+    - id: http-order-llm
+      source: http-order
+      sourceHandle: source
+      target: llm-order
+      targetHandle: target
+    - id: llm-order-answer
+      source: llm-order
+      sourceHandle: source
+      target: answer-order
+      targetHandle: target
+    - id: classifier-exception
+      source: classifier
+      sourceHandle: exception
+      target: extract-exception
+      targetHandle: target
+    - id: extract-exception-http
+      source: extract-exception
+      sourceHandle: source
+      target: http-exception
+      targetHandle: target
+    - id: http-exception-retrieve
+      source: http-exception
+      sourceHandle: source
+      target: retrieve-exception
+      targetHandle: target
+    - id: retrieve-exception-llm
+      source: retrieve-exception
+      sourceHandle: source
+      target: llm-exception
+      targetHandle: target
+    - id: llm-exception-answer
+      source: llm-exception
+      sourceHandle: source
+      target: answer-exception
+      targetHandle: target
+    - id: classifier-other
+      source: classifier
+      sourceHandle: other
+      target: llm-fallback
+      targetHandle: target
+    - id: llm-fallback-answer
+      source: llm-fallback
+      sourceHandle: source
+      target: answer-fallback
+      targetHandle: target
+    nodes:
+    - id: start
+      type: custom
+      position: {x: 40, y: 400}
+      sourcePosition: right
+      targetPosition: left
+      data:
+        desc: 接收用户问题
+        title: 开始
+        type: start
+        variables: []
+    - id: classifier
+      type: custom
+      position: {x: 340, y: 400}
+      sourcePosition: right
+      targetPosition: left
+      data:
+        classes:
+        - id: knowledge
+          name: 知识库问答
+        - id: order
+          name: 订单状态查询
+        - id: exception
+          name: 异常处理建议
+        - id: other
+          name: 其他问题
+        desc: 将问题分流到知识、订单、异常或兜底分支
+        instruction: >-
+          知识库问答用于不涉及具体订单号的流程和规则问题；订单状态查询用于查询具体订单状态、位置和预计送达时间；异常处理建议用于询问延迟、破损、温控、投诉、赔付或人工升级；其他问题用于非物流问题或信息不足的问题。
+        model:
+          completion_params:
+            temperature: 0.1
+          mode: chat
+          name: ''
+          provider: ''
+        query_variable_selector: [sys, query]
+        title: 问题分类
+        type: question-classifier
+        vision:
+          enabled: false
+    - id: retrieve-knowledge
+      type: custom
+      position: {x: 680, y: 40}
+      sourcePosition: right
+      targetPosition: left
+      data:
+        dataset_ids: []
+        desc: 导入后选择“物流供应链业务知识库”
+        multiple_retrieval_config:
+          reranking_enable: false
+          score_threshold: 0.35
+          top_k: 5
+        query_attachment_selector: []
+        query_variable_selector: [sys, query]
+        retrieval_mode: multiple
+        title: 检索物流知识库
+        type: knowledge-retrieval
+    - id: llm-knowledge
+      type: custom
+      position: {x: 980, y: 40}
+      sourcePosition: right
+      targetPosition: left
+      data:
+        context:
+          enabled: true
+          variable_selector: [retrieve-knowledge, result]
+        desc: 严格依据检索内容回答
+        memory:
+          window: {enabled: false, size: 10}
+        model:
+          completion_params: {temperature: 0.2}
+          mode: chat
+          name: ''
+          provider: ''
+        prompt_template:
+        - role: system
+          text: >-
+            你是物流供应链业务助手。只能依据提供的知识库上下文回答；如果上下文没有明确依据，直接说明“知识库中没有找到明确依据”。流程问题按步骤回答，不编造制度、金额或内部系统。回答末尾注明“以上内容基于当前知识库资料整理”。
+        - role: user
+          text: |-
+            用户问题：{{#sys.query#}}
+
+            知识库上下文：{{#retrieve-knowledge.result#}}
+        title: 生成知识回答
+        type: llm
+        variables: []
+        vision: {enabled: false}
+    - id: answer-knowledge
+      type: custom
+      position: {x: 1280, y: 40}
+      sourcePosition: right
+      targetPosition: left
+      data:
+        answer: '{{#llm-knowledge.text#}}'
+        desc: ''
+        title: 回复知识问答
+        type: answer
+        variables: []
+    - id: extract-order
+      type: custom
+      position: {x: 680, y: 310}
+      sourcePosition: right
+      targetPosition: left
+      data:
+        desc: 提取形如 JD2026001 的订单号
+        instruction: 只提取用户问题中的订单号，不要补造不存在的订单号。
+        model:
+          completion_params: {temperature: 0}
+          mode: chat
+          name: ''
+          provider: ''
+        parameters:
+        - description: 用户问题中的订单号，例如 JD2026001
+          name: order_id
+          required: true
+          type: string
+        query: [sys, query]
+        reasoning_mode: prompt
+        title: 提取订单号
+        type: parameter-extractor
+        vision: {enabled: false}
+    - id: http-order
+      type: custom
+      position: {x: 980, y: 310}
+      sourcePosition: right
+      targetPosition: left
+      data:
+        authorization: {type: no-auth}
+        body:
+          type: json
+          data:
+          - id: order-query-body
+            key: ''
+            type: text
+            value: '{"order_id":"{{#extract-order.order_id#}}"}'
+        desc: 导入后将域名替换为 Dify 可访问的订单接口
+        headers: 'Content-Type:application/json'
+        method: POST
+        params: ''
+        retry_config:
+          enabled: true
+          max_retries: 2
+          retry_interval: 1000
+        timeout: {connect: 10, read: 30, write: 30}
+        title: 查询订单接口
+        type: http-request
+        url: https://replace-me.example.com/orders/query
+    - id: llm-order
+      type: custom
+      position: {x: 1280, y: 310}
+      sourcePosition: right
+      targetPosition: left
+      data:
+        context: {enabled: false, variable_selector: []}
+        desc: 将接口 JSON 整理为客服可读回复
+        memory:
+          window: {enabled: false, size: 10}
+        model:
+          completion_params: {temperature: 0.1}
+          mode: chat
+          name: ''
+          provider: ''
+        prompt_template:
+        - role: system
+          text: >-
+            你是物流订单客服助手。只依据订单接口返回的 JSON 回答，说明订单号、状态、当前位置、预计送达时间和异常类型；接口没有的信息不得编造。
+        - role: user
+          text: |-
+            用户问题：{{#sys.query#}}
+
+            订单接口返回：{{#http-order.body#}}
+        title: 整理订单状态
+        type: llm
+        variables: []
+        vision: {enabled: false}
+    - id: answer-order
+      type: custom
+      position: {x: 1580, y: 310}
+      sourcePosition: right
+      targetPosition: left
+      data:
+        answer: '{{#llm-order.text#}}'
+        desc: ''
+        title: 回复订单状态
+        type: answer
+        variables: []
+    - id: extract-exception
+      type: custom
+      position: {x: 680, y: 610}
+      sourcePosition: right
+      targetPosition: left
+      data:
+        desc: 提取异常订单号
+        instruction: 只提取用户问题中的订单号；如果没有订单号，保留为空并由下游提示补充。
+        model:
+          completion_params: {temperature: 0}
+          mode: chat
+          name: ''
+          provider: ''
+        parameters:
+        - description: 用户问题中的订单号，例如 JD2026002
+          name: order_id
+          required: false
+          type: string
+        query: [sys, query]
+        reasoning_mode: prompt
+        title: 提取异常订单号
+        type: parameter-extractor
+        vision: {enabled: false}
+    - id: http-exception
+      type: custom
+      position: {x: 980, y: 610}
+      sourcePosition: right
+      targetPosition: left
+      data:
+        authorization: {type: no-auth}
+        body:
+          type: json
+          data:
+          - id: exception-body
+            key: ''
+            type: text
+            value: '{"order_id":"{{#extract-exception.order_id#}}","user_problem":"{{#sys.query#}}"}'
+        desc: 调用异常分析接口
+        headers: 'Content-Type:application/json'
+        method: POST
+        params: ''
+        retry_config:
+          enabled: true
+          max_retries: 2
+          retry_interval: 1000
+        timeout: {connect: 10, read: 30, write: 30}
+        title: 分析订单异常
+        type: http-request
+        url: https://replace-me.example.com/orders/analyze
+    - id: retrieve-exception
+      type: custom
+      position: {x: 1280, y: 610}
+      sourcePosition: right
+      targetPosition: left
+      data:
+        dataset_ids: []
+        desc: 导入后选择物流知识库并按需启用重排
+        multiple_retrieval_config:
+          reranking_enable: false
+          score_threshold: 0.35
+          top_k: 5
+        query_attachment_selector: []
+        query_variable_selector: [sys, query]
+        retrieval_mode: multiple
+        title: 检索异常处理 SOP
+        type: knowledge-retrieval
+    - id: llm-exception
+      type: custom
+      position: {x: 1580, y: 610}
+      sourcePosition: right
+      targetPosition: left
+      data:
+        context:
+          enabled: true
+          variable_selector: [retrieve-exception, result]
+        desc: 合并订单事实与 SOP
+        memory:
+          window: {enabled: false, size: 10}
+        model:
+          completion_params: {temperature: 0.2}
+          mode: chat
+          name: ''
+          provider: ''
+        prompt_template:
+        - role: system
+          text: >-
+            你是物流异常处理助手。根据订单接口事实和知识库 SOP 输出订单概况、异常判断、建议处理步骤、客户沟通话术、是否需要人工升级。禁止编造赔付金额、内部系统或不存在的规则；信息不足时明确说明。
+        - role: user
+          text: |-
+            用户问题：{{#sys.query#}}
+
+            订单接口返回：{{#http-exception.body#}}
+
+            SOP 上下文：{{#retrieve-exception.result#}}
+        title: 生成异常建议
+        type: llm
+        variables: []
+        vision: {enabled: false}
+    - id: answer-exception
+      type: custom
+      position: {x: 1880, y: 610}
+      sourcePosition: right
+      targetPosition: left
+      data:
+        answer: '{{#llm-exception.text#}}'
+        desc: ''
+        title: 回复异常建议
+        type: answer
+        variables: []
+    - id: llm-fallback
+      type: custom
+      position: {x: 680, y: 920}
+      sourcePosition: right
+      targetPosition: left
+      data:
+        context: {enabled: false, variable_selector: []}
+        desc: 非物流问题或缺失信息时给出范围提示
+        memory:
+          window: {enabled: false, size: 10}
+        model:
+          completion_params: {temperature: 0.1}
+          mode: chat
+          name: ''
+          provider: ''
+        prompt_template:
+        - role: system
+          text: 当前系统只支持物流知识问答、订单查询和异常处理建议。若信息不足，请提示用户补充订单号或业务背景。
+        - role: user
+          text: '{{#sys.query#}}'
+        title: 兜底回复
+        type: llm
+        variables: []
+        vision: {enabled: false}
+    - id: answer-fallback
+      type: custom
+      position: {x: 980, y: 920}
+      sourcePosition: right
+      targetPosition: left
+      data:
+        answer: '{{#llm-fallback.text#}}'
+        desc: ''
+        title: 回复兜底提示
+        type: answer
+        variables: []
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.55

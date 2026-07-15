@@ -14,8 +14,11 @@ htmlcov/
 
 .env
 .env.*
+!.env.example
 
 evaluation/eval_result.csv
+evaluation/eval_summary.json
+evaluation/results/*.tmp
 
 .idea/
 .vscode/
