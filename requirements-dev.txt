@@ -1,0 +1,4 @@
+-r order_api/requirements.txt
+httpx2>=2.7,<3.0
+pytest>=8.4,<9.0
+PyYAML>=6.0,<7.0

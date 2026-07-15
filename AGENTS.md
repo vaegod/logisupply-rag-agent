@@ -2,7 +2,7 @@
 
 ## 项目概览
 
-本项目用于实现“基于 RAG 与 Agent 工作流的物流供应链知识库问答系统”首版，重点展示 Dify、RAG、Knowledge、Chatflow、HTTP Request、FastAPI、Prompt Engineering 和评测能力。
+本项目用于实现“物流供应链知识库与工具调用工作流”首版，重点展示 Dify、RAG、Knowledge、Chatflow、HTTP Request、FastAPI、Prompt Engineering 和评测能力。执行路径由 Chatflow 预先编排，不包装为完全自主规划型 Agent。
 
 V1 范围固定为四项能力：
 
@@ -20,6 +20,7 @@ V1 范围固定为四项能力：
 - `prompts/`：Chatflow 中使用的 Prompt 配置源
 - `evaluation/`：测试问题、评测脚本与评测结果输出目录
 - `dify/`：知识库参数、工作流拓扑、节点配置与联调说明
+- `tests/`：订单 API、Dify DSL 和评测代码测试
 - `screenshots/`：项目展示截图
 
 新增文件时，优先放入上述目录，不要在根目录随意堆放业务材料。
@@ -43,7 +44,20 @@ pip install -r requirements.txt
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-运行评测脚本：
+安装开发依赖并运行测试：
+
+```powershell
+pip install -r requirements-dev.txt
+python -m pytest
+```
+
+运行无需密钥的离线基线：
+
+```powershell
+python evaluation/offline_eval.py --write --check
+```
+
+运行 Dify 端到端评测：
 
 ```powershell
 $env:DIFY_API_KEY="<DIFY_API_KEY>"
@@ -69,6 +83,7 @@ python rag_eval.py
 
 - `evaluation/test_questions.csv` 用于维护测试集，优先扩充真实业务表达方式，而不是只写标准问法。
 - `evaluation/eval_result.csv` 是本地输出文件，不纳入版本控制。
+- `evaluation/results/` 保存可复现的离线指标、逐题结果与 bad case；修改检索或路由逻辑后需要重新生成。
 - `screenshots/` 至少保留知识库、Chatflow、RAG 回答、订单查询、异常处理、评测结果 6 类截图。
 
 ## 提交规范

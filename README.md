@@ -1,8 +1,13 @@
-# 基于 RAG 与 Agent 工作流的物流供应链知识库问答系统
+# 物流供应链知识库与工具调用工作流
+
+[![CI](https://github.com/vaegod/logisupply-rag-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/vaegod/logisupply-rag-agent/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## 项目简介
 
-本项目面向物流、仓储、供应链业务场景，基于 Dify 构建 RAG 知识库问答与 Agent 工作流系统。系统支持物流业务文档问答、订单状态查询、异常订单处理建议生成，并通过自建测试集对问答效果进行评估。
+本项目面向物流、仓储和供应链业务场景，使用 Dify Chatflow 编排知识检索、参数提取和 HTTP 工具调用，使用 FastAPI 提供模拟订单接口。系统支持物流业务文档问答、订单状态查询和异常处理建议，并通过自建测试集建立本地基线与 Dify 端到端评测入口。
+
+当前实现属于路径预先定义的工作流应用，不是能够自主规划和选择任意工具的通用 Agent。
 
 项目聚焦业务落地与工程可复现性，重点展示以下能力：
 
@@ -34,7 +39,7 @@
 
 - Dify
 - RAG / Knowledge Retrieval
-- Dify Chatflow / Agent Workflow
+- Dify Chatflow / Workflow
 - FastAPI
 - Python
 - Markdown 知识库
@@ -62,8 +67,10 @@ Question Classifier
 ├── docs/          # 物流业务知识库与项目展示文档
 ├── order_api/     # FastAPI 订单工具接口
 ├── prompts/       # Dify LLM 节点 Prompt
-├── evaluation/    # 测试集与评测脚本
-├── dify/          # Dify 工作流配置说明
+├── evaluation/    # 离线基线、Dify 端到端评测与结果
+├── dify/          # Dify DSL、节点配置与导入说明
+├── tests/         # API、DSL 与评测测试
+├── .github/       # GitHub Actions CI
 └── screenshots/   # 项目展示截图
 ```
 
@@ -90,9 +97,23 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 - `http://127.0.0.1:8000/health`
 - `http://127.0.0.1:8000/docs`
 
+运行接口与评测测试：
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements-dev.txt
+python -m pytest
+```
+
 ## Dify 工作流
 
-建议在 Dify 中创建 `Chatflow` 应用，包含以下节点：
+仓库提供 Dify App DSL：
+
+- [logisupply_chatflow.dify.yml](dify/logisupply_chatflow.dify.yml)
+- [DSL 导入说明](dify/DSL导入说明.md)
+
+DSL 包含以下节点和完整连线：
 
 - `Question Classifier`
 - `Knowledge Retrieval`
@@ -100,6 +121,8 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 - `HTTP Request`
 - `LLM`
 - `Answer`
+
+导入后仍需在用户自己的 Dify 工作区选择模型、知识库，并替换订单 API 地址。仓库不会保存模型凭证、知识库内部 ID 或临时隧道地址。
 
 详细节点说明、Prompt 配置和联调替换项见：
 
@@ -158,7 +181,45 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 ## 评测方法
 
-仓库提供：
+### 本地可复现基线
+
+本地评测不需要模型密钥，覆盖：
+
+- 10 份物流 SOP 的文档级 BM25 检索。
+- 25 条带目标文档标注的检索问题。
+- 50 条意图路由问题。
+- 24 条包含订单号的问题及本地订单工具查询。
+
+运行：
+
+```powershell
+python evaluation/offline_eval.py --write --check
+```
+
+当前实测结果：
+
+| 指标 | 结果 |
+|---|---:|
+| BM25 Recall@1 | 88.00% |
+| BM25 Recall@3 | 100.00% |
+| BM25 MRR | 0.9333 |
+| 规则路由准确率 | 100.00% |
+| 订单号提取率 | 100.00% |
+| 已知订单工具查询成功率 | 100.00% |
+
+结果文件：
+
+- [离线指标](evaluation/results/offline_metrics.json)
+- [检索逐题结果](evaluation/results/retrieval_cases.csv)
+- [路由逐题结果](evaluation/results/routing_cases.csv)
+- [失败与弱案例](evaluation/results/failure_cases.md)
+- [迭代记录](evaluation/results/迭代记录.md)
+
+这些指标是本地、确定性的基线，不等同于 Dify 混合检索或生成回答质量。当前仍有 3 条 BM25 Top 1 未命中、但 Top 3 成功召回的弱案例。
+
+### Dify 端到端评测
+
+仓库同时提供：
 
 - `evaluation/test_questions.csv`：基础测试问题集
 - `evaluation/rag_eval.py`：调用 Dify API 的评测脚本
@@ -171,13 +232,17 @@ cd evaluation
 python rag_eval.py
 ```
 
-评测结果默认输出到 `evaluation/eval_result.csv`。
+评测结果默认输出：
+
+- `evaluation/eval_result.csv`：逐题回答、关键词得分、API 状态和延迟。
+- `evaluation/eval_summary.json`：API 成功率、关键词通过率、平均延迟、P95 延迟和分类型结果。
 
 说明：
 
 - 仓库不保存 `DIFY_API_KEY`，运行前需通过环境变量注入。
 - 运行 `rag_eval.py` 前，请先在 Dify 中发布当前 Chatflow 应用；未发布状态下，Dify API 会返回 `Workflow not published`。
 - 当 Dify Prompt 或检索参数调整后，建议重新跑一次小样本验证，再批量执行 `rag_eval.py`。
+- 端到端结果没有实际运行前，不应把本地 BM25 指标描述成 Dify RAG 效果。
 
 ## 部署与联调说明
 
@@ -187,8 +252,28 @@ python rag_eval.py
 - Dify 在 HTTP URL、POST Body 和 LLM Prompt 中，优先使用变量插入器，不要依赖手写 `{{...}}` 模板字符串。
 - 每次在 Dify UI 中调整 Prompt、检索参数或节点结构后，应同步回写到仓库。
 
+## 自动化验证
+
+GitHub Actions 在 Python 3.11 和 3.13 上执行：
+
+- 订单 API、Dify DSL 和评测代码测试。
+- 离线评测阈值回归。
+
+当前本地测试结果为 `23 passed`。CI 徽章需要将本地修改推送到 GitHub 后才会显示本次工作流状态。
+
+## 项目边界
+
+- 订单数据是 JSON 模拟数据，不代表生产订单系统。
+- 本地 BM25 是透明基线，不复现 Dify 的切分、向量检索或重排。
+- Dify DSL 已通过 YAML 和图结构测试，但仍需在实际工作区选择模型与知识库后完成导入联调。
+- 项目没有生产级鉴权、限流、监控和权限隔离。
+
 ## 项目展示文档
 
 - [项目展示说明](docs/项目展示说明.md)
 - [项目实现说明](docs/项目实现说明.md)
 - [技术问答](docs/技术问答.md)
+
+## License
+
+[MIT License](LICENSE)
