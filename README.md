@@ -7,15 +7,17 @@
 
 面向物流客服与异常处理操作员，提供订单与轨迹查询、物流 SOP 检索和异常工单协作。Agent 准备处理建议与工单草稿，用户确认后建单，操作员跟进处理、解决和关闭。
 
-**当前运行方式：本机 Dify 1.17.1 + React/TypeScript + FastAPI + SQLite + Milvus 3.0.2。** 应用和数据库在本机 Docker 中运行，Qwen 和 Embedding 继续调用 SiliconFlow API，完成回答生成与向量化。
+**技术栈：React／TypeScript · Python／FastAPI · Dify Agent · Milvus · SQLite · BM25／RRF · Docker Compose。**
+
+应用、Dify 和数据库在本机 Docker 中运行，Qwen 与 Embedding 通过 SiliconFlow API 完成回答生成与向量化。
 
 [本地运行说明](docs/本地运行说明.md) · [前端说明](web/README.md) · [Milvus 迁移说明](docs/Milvus迁移说明.md) · [验收报告](evaluation/results/local_delivery.json)
 
 ## 项目截图
 
-实际本机页面：Agent 查询订单、检索 SOP 后返回文件和章节依据，页面展示从业务数据库读取的待确认草稿。
+查询订单与 SOP，查看处理依据，确认工单草稿。
 
-![本地 Dify 的 SOP 回答与草稿确认](output/playwright/assistant-rag-draft.png)
+![SOP 处理建议与工单草稿确认](output/playwright/assistant-rag-draft.png)
 
 操作员独立处理异常工单，用户页面同步展示工单状态、解决说明与处理事件。
 
@@ -44,7 +46,7 @@
 | 制度检索 | BM25、Milvus 3.0.2、RRF | 当前使用 FLAT + COSINE 精确向量检索与排名融合 |
 | 平台与部署 | Docker Compose、WSL、Dify PostgreSQL/Redis | 运行本机服务、保存 Dify 平台配置和任务状态 |
 
-浏览器访问 FastAPI；FastAPI 调用本机 Dify；Dify 工具再访问同一个业务容器，页面与工具共用同一份 SQLite。Milvus 只保存制度片段及其向量，订单事实和工单状态仍通过业务接口精确读取。
+浏览器通过 FastAPI 访问 Dify；Dify 调用业务工具查询订单、检索 SOP 和准备草稿。SQLite 保存订单与工单状态，Milvus 保存 SOP 片段及其向量，业务数据与知识检索分别管理。
 
 ## 快速开始
 
@@ -96,12 +98,12 @@ Copy-Item .env.example .env
 
 GitHub Actions 在 Python 3.11、3.13 上运行后端测试与离线基线，并单独运行前端测试和构建。
 
-| 验证层次 | 已有结果 | 对应证据 |
+| 测试范围 | 结果 | 详细报告 |
 | --- | --- | --- |
-| 后端程序回归 | 79 项通过，保留严格工具定义一致性检查 | [依赖统一后的回归](evaluation/results/dependency_alignment_tests.xml) |
-| 前端与构建 | 3 项流解析测试通过，TypeScript/Vite 构建通过 | [GitHub CI](https://github.com/vaegod/logisupply-rag-agent/actions/workflows/ci.yml?query=branch%3Amain) |
-| 真实本机 Dify API | 草稿、确认幂等、隔离、操作员关闭与冲突拒绝通过 | [API 验收](evaluation/results/local_acceptance.json) |
-| 实际浏览器 | SOP 引用、可信卡片、点击确认、操作员处理与用户进度通过 | [浏览器验收](evaluation/results/local_browser_acceptance.json) |
+| 后端 · pytest | 79 项通过，覆盖业务接口、混合检索与工具定义 | [依赖统一后的回归](evaluation/results/dependency_alignment_tests.xml) |
+| 前端 · Vitest | 3 项流解析测试通过，TypeScript/Vite 构建通过 | [GitHub CI](https://github.com/vaegod/logisupply-rag-agent/actions/workflows/ci.yml?query=branch%3Amain) |
+| Dify API 联调 | 草稿、确认幂等、隔离、操作员关闭与冲突拒绝通过 | [API 验收](evaluation/results/local_acceptance.json) |
+| 浏览器流程 | SOP 引用、草稿确认、操作员处理与用户进度通过 | [浏览器验收](evaluation/results/local_browser_acceptance.json) |
 | 停止再启动 | 业务事件、网页会话、Dify 调用与 Milvus 索引保留 | [持久化验收](evaluation/results/local_persistence.json) |
 
 本地复验：
@@ -137,8 +139,8 @@ cd ..
 | `deploy/dify/`、`deploy/milvus/` | 本机编排、初始化、代理与向量服务配置 |
 | `dify/`、`prompts/` | Agent 生成器、可分享模板、工具定义和系统指令 |
 | `docs/` | 十份编号 SOP、运行说明和迁移说明 |
-| `evaluation/`、`tests/` | 检索对比、真实链路验收与程序回归 |
-| `output/playwright/` | 实际本机页面与下线证明截图 |
+| `evaluation/`、`tests/` | 检索对比、流程验证与程序回归 |
+| `output/playwright/` | 工作台与工单流程截图 |
 
 ## 版本与开发文档
 
