@@ -1,0 +1,2 @@
+# Optional local embedded engine for development/tests, not needed for a server.
+-r requirements-dev.txt

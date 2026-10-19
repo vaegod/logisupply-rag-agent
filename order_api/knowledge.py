@@ -1,11 +1,13 @@
-"""Search the same ten versioned SOP documents without model credentials."""
+"""BM25 baseline primitives and the lazy hybrid SOP retrieval entry point."""
 from __future__ import annotations
 
 import math
+import atexit
 import re
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
+from functools import lru_cache
 
 DOCS_DIR = Path(__file__).parents[1] / "docs"
 
@@ -57,11 +59,13 @@ def load_documents() -> dict[str, str]:
             for path in sorted(DOCS_DIR.glob("[0-9][0-9]_*.md"))}
 
 
+@lru_cache(maxsize=1)
+def get_retriever():
+    from .rag import load_retriever
+    engine = load_retriever()
+    atexit.register(engine.close)
+    return engine
+
+
 def search_sop(query: str, top_k: int = 3) -> dict:
-    documents = load_documents()
-    ranking = BM25Index(documents).search(query)
-    return {"retrieval_method": "document_bm25", "query": query,
-            "results": [{"source": name, "score": round(score, 4),
-                         "content": documents[name][:6000],
-                         "truncated": len(documents[name]) > 6000}
-                        for name, score in ranking[:top_k] if score > 0]}
+    return get_retriever().search(query, top_k)

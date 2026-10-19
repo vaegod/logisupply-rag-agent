@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-10-19T08:40:16.758194+00:00",
+  "scope": "actual stop-local.ps1 then start-local.ps1 after SQLite migration to local Docker named volume",
+  "passed": true,
+  "business_volume": "logisupply-dify_business_data",
+  "ticket_id": "T-7e5ba70603d5c035",
+  "ticket_status": "closed",
+  "events": [
+    "open",
+    "processing",
+    "resolved",
+    "closed"
+  ],
+  "ticket_count": 2,
+  "integrity": "ok",
+  "dify_app_id": "a60d3afc-c01b-412a-9d39-53134b17e562",
+  "dify_after_restart_answer": "\n订单 JD2026002 的当前状态为 **延迟**，最新节点为 **华北干线运输节点**，预计送达时间为 **2026-05-07**，最后更新时间为 **2026-05-03 09:15:00**。\n\n物流轨迹显示，该订单在 **2026-05-03 09:15:00** 时处于 **华北干线运输节点**，状态为 **延迟**，原因标注为 **干线运输延迟**。由于数据来源为演示快照，未记录具体延迟原因，不能推断为天气、运力或其他未提及的因素。\n\n如需进一步处理，请告知。",
+  "retrieval_method": "hybrid_bm25_milvus_rrf",
+  "degraded": false,
+  "index_reused": true,
+  "limits": [
+    "Initial Windows-bind WAL I/O failure retained in local_initialization_history.json",
+    "Final checks read SQLite inside its Linux container only",
+    "Restart is not zero downtime or a backup recovery drill"
+  ]
+}

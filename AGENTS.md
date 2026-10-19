@@ -94,3 +94,11 @@ python rag_eval.py
 - 提交信息建议使用简洁中文动词短语，例如：`初始化项目骨架`、`补充订单接口`、`完善 Dify 配置说明`。
 - 每次提交尽量围绕单一主题，避免把文档、代码和截图的大量不相关改动混在一起。
 - 提交前确认没有把密钥、个人账号信息、临时隧道地址和无关缓存文件带入仓库。
+
+## 混合检索 RAG 约定（2026-10-19，Milvus迁移后）
+
+当前search_sop使用order_api/rag.py的章节BM25＋Milvus＋RRF。显式索引命令为python -m order_api.rag_index；用户查询不得隐式全库重建。LOGISUPPLY_MILVUS_URI指定独立服务地址或本地Lite的.db路径；该应用变量与SDK自身的MILVUS_URI区分，避免SDK在导入时将本地路径误解析为服务地址。单进程Lite演示使用独占本地存储，CLI/API不要抢同一目录；多客户端用独立服务。当前53片段选择FLAT＋COSINE，索引按语料/模型/维度/切分/存储版本隔离；就绪检查使用Strong一致性count聚合，不依赖可能滞后的统计行数。故障必须明确标记BM25降级。保留原文档级基线和迁移前Qdrant报告，不能将历史数字直接当新Milvus结果。Agent工具与工单权限边界保持原样。
+
+## 本机部署要求（用户2026-10-19最新确认）
+
+默认运行方式改为本机Dify＋FastAPI/React＋Milvus，保留经典Agent/Function Calling。用户允许Qwen和Embedding API，不要求离线模型权重。不得将Dify Cloud或Railway地址作为当前运行依赖，也不为本任务新建云端资源。部署入口为start-local.ps1，Dify配置由deploy/dify/prepare.py生成，账号和服务密钥只写入被忽略的dify/local/selfhost。HTTP仅在显式本地模式下允许回环或指定容器Dify端点，不能为了本地联调普遍放开不加密远程地址。旧云端代码与历史验收保留为对照，不把它们当成本轮本地页面闭环证据。只有真实本地Dify调用本地工具并与本地SQLite同库时，才能声明本地全链路通过。

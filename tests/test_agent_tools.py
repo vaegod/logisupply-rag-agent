@@ -58,7 +58,7 @@ def test_sqlite_order_and_tracking_are_archived_snapshots(service):
 def test_sop_returns_citable_evidence_and_empty_unknown(service):
     client, _ = service
     result = post(client, "search_sop", {"query": "冷链温度报警怎么办"}).json()
-    assert result["retrieval_method"] == "document_bm25"
+    assert result["retrieval_method"] == "chunk_bm25"
     assert result["results"][0]["source"] == "03_冷链运输规范.md"
     assert "content" in result["results"][0]
     assert post(client, "search_sop", {"query": "zzzxxyy"}).json()["results"] == []

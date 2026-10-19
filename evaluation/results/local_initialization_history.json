@@ -1,0 +1,36 @@
+{
+  "scope": "本机Dify首次部署排障，不是检索效果评测",
+  "failures": [
+    {
+      "symptom": "首个页面请求未完成",
+      "cause": "随机Redis密码未同步到CELERY_BROKER_URL",
+      "fix": "生成脚本统一绑定队列连接",
+      "final_status": "实际本地API和页面闭环通过"
+    },
+    {
+      "symptom": "门控代码节点401",
+      "cause": "SANDBOX_API_KEY与CODE_EXECUTION_API_KEY不一致",
+      "fix": "两端使用同一生成密钥",
+      "final_status": "门控、确认和状态分支执行通过"
+    },
+    {
+      "symptom": "沙箱返回network is disabled",
+      "cause": "经典代码节点请求带网络能力标记",
+      "fix": "保留官方沙箱网络开关，实际门控代码仅处理字符串与JSON",
+      "final_status": "代码节点执行通过"
+    },
+    {
+      "symptom": "API容器重建后一度502",
+      "cause": "Nginx静态解析旧Docker IP",
+      "fix": "使用Docker DNS动态解析上游",
+      "final_status": "本地链路通过，停止再启动另行检查"
+    },
+    {
+      "symptom": "重启后Windows核验程序与Linux容器跨系统打开同一SQLite WAL，页面出现一次500/disk I/O error",
+      "cause": "业务库放在Windows绑定目录并被宿主机SQLite直接读取",
+      "fix": "停止业务容器，用SQLite backup迁入Linux Docker业务命名卷；旧文件保留，后续只用API或容器内读取",
+      "final_status": "保留2张工单、8条事件与网页会话；最终复验另见local_persistence.json"
+    }
+  ],
+  "provenance": "本轮实际命令和首次页面/API失败记录整理；初期local_acceptance.json在重跑时被覆盖，这不是原始逐次转储。含密钥的诊断只存放Git忽略目录。"
+}

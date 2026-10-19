@@ -1,0 +1,32 @@
+# Milvus standalone with embedded etcd and local storage, based on the official
+# standalone_embed deployment. Bind only to localhost for this personal demo.
+services:
+  milvus:
+    image: milvusdb/milvus:v3.0.2
+    command: ["milvus", "run", "standalone"]
+    environment:
+      ETCD_USE_EMBED: "true"
+      ETCD_DATA_DIR: /var/lib/milvus/etcd
+      ETCD_CONFIG_PATH: /milvus/configs/embedEtcd.yaml
+      COMMON_STORAGETYPE: local
+      DEPLOY_MODE: STANDALONE
+    ports:
+      - "127.0.0.1:19530:19530"
+      - "127.0.0.1:19091:9091"
+    volumes:
+      - milvus_data:/var/lib/milvus
+      - ./deploy/milvus/embedEtcd.yaml:/milvus/configs/embedEtcd.yaml:ro
+      - ./deploy/milvus/user.yaml:/milvus/configs/user.yaml:ro
+    security_opt:
+      - seccomp:unconfined
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 10s
+      timeout: 5s
+      start_period: 90s
+      retries: 6
+    mem_limit: 2g
+    cpus: 2
+    restart: unless-stopped
+volumes:
+  milvus_data:

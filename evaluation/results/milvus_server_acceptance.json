@@ -1,0 +1,25 @@
+{
+  "checked_at": "2026-10-19T07:43:46.318820+00:00",
+  "server_version": "3.0.2",
+  "index": {
+    "status": "reopened_after_restart",
+    "collection": "logisupply_sop_c772f06c5ac90ba1ed0c442c",
+    "corpus_version": "c772f06c5ac90ba1ed0c442ca020533c1ae0e6abe9fed4e11ddb85978f424a1b",
+    "documents": 10,
+    "chunks": 53,
+    "embedding_model": "BAAI/bge-m3",
+    "dimensions": 1024,
+    "vector_backend": "milvus_server",
+    "index_type": "FLAT",
+    "metric_type": "COSINE",
+    "consistency": "Strong"
+  },
+  "rows": 53,
+  "restart_completed": true,
+  "storage": "logisupply-milvus_milvus_data命名卷",
+  "scope": "本轮新建本机Milvus容器，未重启原云端服务或其他数据库",
+  "retrieval_method": "hybrid_bm25_milvus_rrf",
+  "embedding_kind": "real_api",
+  "milvus_lite_also_verified": true,
+  "recovery_observation": "重启初期一次Strong查询出现503通道不可用，后续重试恢复且检索通过；不是零中断保证。"
+}

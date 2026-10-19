@@ -1,0 +1,54 @@
+{
+  "checked_at": "2026-10-19T09:46:28.060Z",
+  "scope": "User requested stopping old Railway runtime while preserving service configuration and cloud SQLite volume",
+  "project": {
+    "id": "1908dfaf-370b-4b88-b085-ec9941b6140a",
+    "name": "logisupply-agent",
+    "workspaceName": "vaegod's Projects"
+  },
+  "environment": {
+    "id": "61f4e851-d49b-4c42-b254-5d88a7e3ac59",
+    "name": "production",
+    "isEphemeral": false
+  },
+  "service": {
+    "serviceId": "b90418a4-1b8e-4426-a51c-05354c0ad491",
+    "serviceName": "logisupply-api",
+    "state": "offline",
+    "statusText": "Offline",
+    "activeDeployments": [],
+    "replicaStatus": null,
+    "cronJob": null,
+    "issues": {
+      "warningCount": 0,
+      "criticalCount": 0
+    },
+    "recentFailures": 0,
+    "recentFailedDeployments": [],
+    "hasIssues": false,
+    "isCronJob": false,
+    "hasVolume": true
+  },
+  "removed_deployment_id": "38f312f0-ddf5-45c3-97de-a867247f2fbb",
+  "active_deployments": [],
+  "volumes": [
+    {
+      "id": "3100ff6a-3f70-4c95-b5c2-0b516b837cf0",
+      "name": "logisupply-sqlite",
+      "state": "live",
+      "region": "iad",
+      "sizeMB": 500,
+      "mountedOn": {
+        "serviceId": "b90418a4-1b8e-4426-a51c-05354c0ad491",
+        "serviceName": "logisupply-api",
+        "mountPath": "/data"
+      },
+      "stagedChangeCount": 0
+    }
+  ],
+  "domain_health_http_status": 404,
+  "local_health_http_status": 200,
+  "source_policy": "Original historical commit pin dbbd5fc2536bf7a624dae66601c3379a9403a013 retained; no new cloud deploy requested. A staged source-disconnect edit was discarded, not applied.",
+  "screenshot": "output/playwright/railway-stopped.png",
+  "billing_scope": "Runtime stopped; volume retained. No claim that all storage or account charges ended."
+}

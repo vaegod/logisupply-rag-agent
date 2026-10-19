@@ -16,6 +16,7 @@ from collections import defaultdict, deque
 from pathlib import Path
 from typing import Literal
 from uuid import uuid4
+from urllib.parse import urlsplit
 
 import httpx
 from fastapi import Depends, FastAPI, HTTPException, Request, Response
@@ -51,10 +52,14 @@ def token_hash(token: str) -> str:
 
 def register_web_routes(app: FastAPI, db: Database, *, dify_key: str = "",
                         dify_base: str = "https://api.dify.ai/v1", operator_password: str = "",
-                        public_url: str = "", transport=None):
+                        public_url: str = "", transport=None,
+                        allow_local_dify_http: bool = False, dify_console_url: str = ""):
     # Tests inject MockTransport. The upstream URL is server configuration only.
-    if dify_key and not dify_base.startswith("https://"):
-        raise ValueError("Dify API must use HTTPS")
+    address = urlsplit(dify_base)
+    local_dify = (address.scheme == "http" and allow_local_dify_http and address.hostname in
+                  {"localhost", "127.0.0.1", "::1", "nginx", "dify-nginx"})
+    if dify_key and (address.scheme != "https" and not local_dify or address.username or address.password):
+        raise ValueError("Dify API must use HTTPS or an explicitly enabled local Dify endpoint")
     if operator_password and len(operator_password) < 24:
         raise ValueError("Web operator password must contain at least 24 characters")
     ready = False
@@ -165,6 +170,8 @@ def register_web_routes(app: FastAPI, db: Database, *, dify_key: str = "",
                                 "ORDER BY created_at DESC", (sid,)).fetchall()
         return {"conversations": [dict(r) for r in rows], "orders": db.load_orders(),
                 "operator": bool(session(request, "operator", optional=True)), "chat_available": bool(dify_key),
+                "deployment_mode": "local" if local_dify else "remote",
+                "dify_console_url": dify_console_url,
                 "identity_notice": "当前浏览器的匿名演示会话；清除 Cookie 后无法恢复。订单为历史演示快照。"}
 
     @app.get("/web/conversations/{cid}")

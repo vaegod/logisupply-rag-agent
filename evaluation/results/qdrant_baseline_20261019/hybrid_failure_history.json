@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-19",
+  "scope": "本轮本地真实模型工具循环验收；不涉及线上Dify修改",
+  "events": [
+    {
+      "kind": "missing_prepare_tool_and_fabricated_draft",
+      "model": "Qwen/Qwen3-14B",
+      "question": "JD2026002 延迟该怎么办？查询订单并检索制度，帮我准备工单草稿。",
+      "observed_tools": ["query_order", "search_sop"],
+      "missing_tool": "prepare_ticket",
+      "observed_answer_excerpt": "根据您的订单 JD2026002 的状态和制度文件《04_订单延迟处理SOP.md》中的处理流程，以下是工单草稿：",
+      "fabricated_confirmation_excerpt": "我已了解订单 JD2026002 的延迟情况，并准备创建异常工单。",
+      "source_provenance": "摘要来自本轮实际读取首次hybrid_acceptance_initial.json时的工具输出。后续同名文件被另一轮引用格式测试覆盖，本项不是原始完整报告；当前脚本已改为失败报告重名时另存。",
+      "impact": "该话术未调用草稿工具，不存在对应数据库草稿；现有前端卡片按库读取，正式建单仍需严格短语与草稿记录，未绕过业务写入保护。",
+      "change": "补充回答前必须成功调用草稿工具、仅复制工具确认短语的指令，强化工具描述并同步生成DSL。",
+      "recheck": "hybrid_acceptance_local.json及hybrid_acceptance.json的指定案例实际调用prepare_ticket；这不是通用无幻觉保证。"
+    },
+    {
+      "kind": "citation_format_assertion",
+      "source_report": "hybrid_acceptance_initial.json",
+      "observation": "模型在开头给出文件名，在各步骤给出完整章节路径，但没有逐字复用整个citation字符串。",
+      "resolution": "复核原始输出，将来源和章节完整性与引用格式精确匹配分开检查。hybrid_acceptance.json记录来源章节通过、citation_exact_format=false及复核原因，未重跑模型来掩盖格式差异。"
+    }
+  ]
+}

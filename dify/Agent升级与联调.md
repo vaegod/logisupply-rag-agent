@@ -1,3 +1,5 @@
+> 2026-10-19 本机部署更新：当前使用本机 Dify 1.17.1、React/FastAPI、SQLite 与 Milvus 3.0.2，模型继续调用 API。根目录 `start-local.ps1` 启动完整项目，入口 http://127.0.0.1:8020；[本地运行说明](../docs/本地运行说明.md)。79项后端与3项前端测试和构建通过，真实本地 Dify 工单全流程见 `evaluation/results/local_acceptance.json`。下文旧云端部署、旧接口启动或迁移首轮数字按历史范围保留。
+
 # 物流智能体 V2：配置、运行与验收
 
 V1 `logisupply_chatflow.dify.yml` 是原预定义工作流，保留作对照。V2 `logisupply_agent.dify.yml` 使用 Dify 经典 Agent / Function Calling，前端继续使用 Dify 自带聊天页面。模板中的模型、API 工具 provider ID 和地址需要工作区绑定，不表示已完成云端联调。

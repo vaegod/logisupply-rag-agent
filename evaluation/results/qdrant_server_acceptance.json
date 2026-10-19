@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-10-19T06:40:04.586181+00:00",
+  "server_version": "1.19.2",
+  "collection": "logisupply_sop_7dfd146c51ddf1e2a111b3e3",
+  "points_count": 53,
+  "status": "green",
+  "restart_completed": true,
+  "restart_scope": "本轮新建本机Qdrant容器，未重启线上服务或既有业务库",
+  "storage": "logisupply-rag_sop_vectors命名卷",
+  "binding": "127.0.0.1:16333",
+  "local_embedded_also_verified": true
+}

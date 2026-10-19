@@ -1,0 +1,49 @@
+{
+  "scope": "actual local gateway, self-hosted Dify 1.17.1, Milvus and local SQLite",
+  "timestamp_utc": "2026-10-19T08:41:16.272076+00:00",
+  "origin": "http://127.0.0.1:8020",
+  "passed": true,
+  "steps": [
+    "Local frontend routes, explicit local Dify mode and HttpOnly anonymous session",
+    "Dify tool-generated draft linked despite external/internal user-ID difference",
+    "Exact user confirmation and duplicate-confirmation idempotency",
+    "User isolation and independent operator authorization",
+    "Operator lifecycle, fresh user progress, archived events, conflict rejection and logout"
+  ],
+  "turns": [
+    {
+      "query": "本机API模拟验收：查询 JD2026003 的温度异常，检索 SOP 并准备工单草稿，暂时不要建单。",
+      "answer": "\n\n\n已准备异常工单草稿，草稿号为 P-1ba19b270b5020d3，有效期至 2026-10-19T09:11:21+00:00。请发送以下完整确认短语以创建正式工单：\n\n**确认创建工单 P-1ba19b270b5020d3**\n\n尚未创建正式工单，请确认。",
+      "seconds": 8.36
+    },
+    {
+      "query": "确认创建工单 P-1ba19b270b5020d3",
+      "answer": "工单已创建\n工单号：T-5030ab71d6875802\n订单号：JD2026003\n状态：open\n摘要：订单 JD2026003 在冷链仓储中心出现温度异常报警，需按 SOP 处理。\n可继续询问工单进度；处理状态由运营人员更新。",
+      "seconds": 0.66
+    },
+    {
+      "query": "确认创建工单 P-1ba19b270b5020d3",
+      "answer": "工单已存在，本次未重复创建\n工单号：T-5030ab71d6875802\n订单号：JD2026003\n状态：open\n摘要：订单 JD2026003 在冷链仓储中心出现温度异常报警，需按 SOP 处理。\n可继续询问工单进度；处理状态由运营人员更新。",
+      "seconds": 1.69
+    }
+  ],
+  "proposal_id": "P-1ba19b270b5020d3",
+  "ticket_id": "T-5030ab71d6875802",
+  "conversation_id": "6e2691e3-0ff0-4623-9cc5-a3e348599aa4",
+  "statuses_observed": [
+    "processing",
+    "resolved",
+    "closed"
+  ],
+  "event_count": 4,
+  "retrieval": {
+    "retrieval_method": "hybrid_bm25_milvus_rrf",
+    "degraded": false,
+    "query": "冷链温度报警应该如何处理"
+  },
+  "sources": [
+    "[03_冷链运输规范.md / 冷链运输规范 / 2. 温控要求]",
+    "[03_冷链运输规范.md / 冷链运输规范 / 4. 温度异常处理]",
+    "[03_冷链运输规范.md / 冷链运输规范 / 3. 运输与交接规范]"
+  ]
+}

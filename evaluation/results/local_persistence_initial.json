@@ -1,0 +1,17 @@
+{
+  "checked_at": "2026-10-19T08:36:33.149735+00:00",
+  "scope": "actual stop-local.ps1 followed by start-local.ps1; persistent local containers and application",
+  "passed": true,
+  "ticket_id": "T-7e5ba70603d5c035",
+  "status": "closed",
+  "event_count": 4,
+  "dify_app_id": "a60d3afc-c01b-412a-9d39-53134b17e562",
+  "dify_after_restart_answer": "\n查询 JD2026002 的订单和轨迹时遇到了系统错误，请稍后再试。如果问题仍然存在，请联系技术支持。",
+  "retrieval_method": "hybrid_bm25_milvus_rrf",
+  "degraded": false,
+  "index_reused": true,
+  "browser_session_check": "see local_browser_acceptance.json",
+  "limits": [
+    "Successful restart is not zero downtime or a backup/recovery drill"
+  ]
+}

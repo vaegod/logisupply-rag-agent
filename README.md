@@ -1,6 +1,22 @@
-> V3 更新：新增 React + TypeScript 独立工作台，复用同一 Railway 后端与 Dify Agent。用户聊天、草稿确认、工单进度和操作员处理见 [前端说明](web/README.md)。V2 已验收报告保留其原始版本范围，V3 验收另行记录。
+> 旧Railway服务已停止运行，当前使用下述本机版本。
+>
+> 当前默认：本机 Dify 1.17.1＋React/TypeScript＋FastAPI＋SQLite＋Milvus 3.0.2；Qwen 和 Embedding 继续调用 API。应用运行不依赖 Railway 或 Dify Cloud。保留经典 Agent 和确认建单/操作员状态流程。
+>
+> **使用入口：[本地运行说明](docs/本地运行说明.md)**。在项目根目录运行 `.\start-local.ps1`，打开 http://127.0.0.1:8020；本地 Dify 为 http://127.0.0.1:8088。操作员和 Dify 登录信息仅见 Git 忽略的 `dify/local/selfhost/本机访问说明.txt`。
+>
+> 本轮79项后端与3项前端测试、前端构建通过；[真实本地 Dify 全链路验收](evaluation/results/local_acceptance.json)覆盖草稿、确认幂等、隔离、操作员关闭与冲突拒绝。10份SOP共53片，使用章节BM25＋Milvus FLAT/COSINE＋RRF；35题Top-1来源命中33/35、Top-3为35/35，与迁移前Qdrant一致，不是答案正确率或换库效果提升。[Milvus迁移说明](docs/Milvus迁移说明.md)。
 
 # 物流工具调用智能体与异常工单闭环
+
+## 当前本机版本演示
+
+模型查询订单、检索制度并准备草稿后，页面从业务数据库展示待确认卡片。用户确认才创建工单；操作员独立登录处理，用户直接查看最新状态和事件。
+
+![本机 Dify 的 SOP 回答与草稿确认](output/playwright/local-rag-draft.png)
+
+![本机工单关闭与重启后的完整事件](output/playwright/local-user-closed-final.png)
+
+本机运行证据见 [交付报告](evaluation/results/local_delivery.json)、[API 全流程](evaluation/results/local_acceptance.json)、[实际浏览器验收](evaluation/results/local_browser_acceptance.json)和[重启持久化](evaluation/results/local_persistence.json)。订单、轨迹和操作均为模拟业务；截图不能代替实时演示。
 
 ## V2 升级
 
@@ -12,12 +28,16 @@
 - [Agent 系统指令](prompts/logistics_agent_prompt.md)
 - [在线验收场景](evaluation/agent_cases.json)
 
-快速启动：`python -m pip install -r requirements-dev.txt`，然后 `python -m order_api.run_demo`。服务为 `http://127.0.0.1:8018`，密钥自动生成在 Git 忽略的 `dify/local/runtime.json`，数据库为 `order_api/data/logisupply.db`。Dify Cloud 还需要公网可达的工具后端。模板和本地测试不等于已完成真实 Dify 端到端验证。
+当前完整运行请使用根目录 `start-local.ps1`。`python -m order_api.run_demo` 仅保留为旧工具接口调试入口，不代表完整页面和本地 Dify 已启动。
 
-2026-10-19 云端验收：后端已部署，原 Dify 应用已发布。本地44项测试、[正式 API 工单全流程](evaluation/results/cloud_acceptance.json)、[容器重启后的数据保留](evaluation/results/cloud_persistence.json)和[正式 Web App](evaluation/results/webapp_acceptance.json)均通过。连续查询同一工单曾出现模型沿用旧状态，已通过实时查询分支修复并[回归验证](evaluation/results/cloud_status_regression.json)。尚未执行的其他在线场景在测试清单中保留 pending。
+### 历史云端版本（不参与当前本机运行）
 
-- [直接使用 Dify 聊天页](https://udify.app/chat/iQSkaDn48xNeqMpK)
-- [公网后端健康检查](https://logisupply-api-production.up.railway.app/health)
+以下保留原始验收和链接，不能作为本轮本地版本证据。旧Railway运行部署已按用户要求下线，项目、配置和SQLite数据卷保留；旧Dify Cloud未改动。[下线记录](evaluation/results/railway_shutdown.json)。
+
+2026-10-19 原云端验收：后端已部署，原 Dify 应用已发布。本地44项测试、[正式 API 工单全流程](evaluation/results/cloud_acceptance.json)、[容器重启后的数据保留](evaluation/results/cloud_persistence.json)和[正式 Web App](evaluation/results/webapp_acceptance.json)均通过。连续查询同一工单曾出现模型沿用旧状态，已通过实时查询分支修复并[回归验证](evaluation/results/cloud_status_regression.json)。尚未执行的其他在线场景在测试清单中保留 pending。
+
+- [历史 Dify 聊天页](https://udify.app/chat/iQSkaDn48xNeqMpK)
+- [历史公网后端健康检查](https://logisupply-api-production.up.railway.app/health)
 - [云部署说明](docs/云端部署说明.md)
 
 ![正式页面工单关闭与处理记录](screenshots/09_cloud_ticket_closed.png)

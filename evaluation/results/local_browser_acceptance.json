@@ -1,0 +1,73 @@
+{
+  "checked_at": "2026-10-19T08:34:30.535813+00:00",
+  "scope": "actual Edge React page -> local gateway -> self-hosted Dify -> local tools and SQLite",
+  "passed": true,
+  "ticket_id": "T-7e5ba70603d5c035",
+  "proposal_id": "P-1edb89c2b1639025",
+  "status": "closed",
+  "event_count": 4,
+  "events": [
+    {
+      "event_id": 5,
+      "ticket_id": "T-7e5ba70603d5c035",
+      "from_status": null,
+      "to_status": "open",
+      "note": "用户确认创建：冷链温度报警",
+      "actor": "user:web-3f65576a122144a5b46e624d1fa251e6",
+      "occurred_at": "2026-10-19T08:29:36+00:00"
+    },
+    {
+      "event_id": 6,
+      "ticket_id": "T-7e5ba70603d5c035",
+      "from_status": "open",
+      "to_status": "processing",
+      "note": "本机页面验收模拟：已核对冷链报警记录，开始人工跟进。",
+      "actor": "operator",
+      "occurred_at": "2026-10-19T08:32:50+00:00"
+    },
+    {
+      "event_id": 7,
+      "ticket_id": "T-7e5ba70603d5c035",
+      "from_status": "processing",
+      "to_status": "resolved",
+      "note": "本机页面验收模拟：按 SOP 完成人工核实与温控记录检查，记录解决结果。",
+      "actor": "operator",
+      "occurred_at": "2026-10-19T08:33:21+00:00"
+    },
+    {
+      "event_id": 8,
+      "ticket_id": "T-7e5ba70603d5c035",
+      "from_status": "resolved",
+      "to_status": "closed",
+      "note": "本机页面验收模拟：确认处理结果已记录，关闭并归档该演示工单。",
+      "actor": "operator",
+      "occurred_at": "2026-10-19T08:33:57+00:00"
+    }
+  ],
+  "observed_steps": [
+    "Typed order/tracking/SOP/draft query in React page",
+    "Received order snapshot and SOP filename plus section titles",
+    "Observed real database-backed proposal card",
+    "Clicked confirmation button to create ticket",
+    "Logged into independent operator page",
+    "Selected ticket and submitted processing, resolved, closed with notes"
+  ],
+  "screenshots": [
+    "output/playwright/local-rag-draft.png",
+    "output/playwright/local-operator-closed.png"
+  ],
+  "limits": [
+    "Desktop Edge only; no real-device mobile acceptance",
+    "First initialization failures retained in local_initialization_history.json",
+    "Model called a draft ID a ticket ID in prose; authoritative card and write path still distinguish them",
+    "Earlier post-restart Windows-bind screenshot includes an I/O error alert; final Docker-volume screenshot is a separate artifact."
+  ],
+  "after_restart": {
+    "anonymous_session_preserved": true,
+    "operator_session_preserved": true,
+    "ticket_status": "closed",
+    "event_count": 4,
+    "business_volume": "logisupply-dify_business_data",
+    "screenshot": "output/playwright/local-user-closed-final.png"
+  }
+}

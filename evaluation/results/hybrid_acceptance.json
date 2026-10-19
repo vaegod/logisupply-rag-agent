@@ -1,0 +1,103 @@
+{
+  "created_at": "2026-10-19T07:42:14.625610+00:00",
+  "scope": "local_api_real_embedding_milvus",
+  "dify_cloud_republished": false,
+  "checks": {
+    "milvus_reopen": true,
+    "api_real_hybrid_evidence": true,
+    "confirmation_idempotency": true,
+    "ticket_lifecycle": true,
+    "real_model_sop_tool": true,
+    "real_model_citation": true,
+    "real_model_order_sop_draft": true,
+    "out_of_scope_weather_refusal": true
+  },
+  "model_runs": [
+    {
+      "question": "冷藏车里的医药样本出现温度报警，应该如何处理？请检索并引用文件和章节。",
+      "tools": [
+        {
+          "name": "search_sop",
+          "retrieval_method": "hybrid_bm25_milvus_rrf",
+          "arguments": {
+            "query": "冷藏车温度报警处理",
+            "top_k": 3
+          },
+          "tool_failed": false,
+          "citations": [
+            "[03_冷链运输规范.md / 冷链运输规范 / 2. 温控要求]",
+            "[03_冷链运输规范.md / 冷链运输规范 / 4. 温度异常处理]",
+            "[03_冷链运输规范.md / 冷链运输规范 / 3. 运输与交接规范]"
+          ]
+        }
+      ],
+      "answer": "根据《03_冷链运输规范.md》中的规定，当冷藏车里的医药样本出现温度报警时，应按照以下步骤处理：\n\n1. 确认异常发生时间、所在节点和持续时长（引用章节：[03_冷链运输规范.md / 冷链运输规范 / 4. 温度异常处理]）。\n2. 检查制冷设备、电源、箱门密封或保温耗材是否异常（引用章节：[03_冷链运输规范.md / 冷链运输规范 / 4. 温度异常处理]）。\n3. 将异常订单标记为高风险，并通知值班运营和质量负责人（引用章节：[03_冷链运输规范.md / 冷链运输规范 / 4. 温度异常处理]）。\n4. 视商品属性决定是否隔离、复检或终止继续配送（引用章节：[03_冷链运输规范.md / 冷链运输规范 / 4. 温度异常处理]）。\n5. 补充记录处理动作、责任判断和客户通知情况（引用章节：[03_冷链运输规范.md / 冷链运输规范 / 4. 温度异常处理]）。\n\n请根据上述步骤进行处理，并确保所有操作都有记录。如果需要进一步的帮助，请告知。",
+      "model": "Qwen/Qwen3-14B"
+    },
+    {
+      "question": "JD2026002 延迟该怎么办？查询订单并检索制度，帮我准备工单草稿。",
+      "tools": [
+        {
+          "name": "query_order",
+          "retrieval_method": null,
+          "arguments": {
+            "order_id": "JD2026002"
+          },
+          "tool_failed": false,
+          "citations": []
+        },
+        {
+          "name": "search_sop",
+          "retrieval_method": "hybrid_bm25_milvus_rrf",
+          "arguments": {
+            "query": "干线运输延迟处理流程",
+            "top_k": 3
+          },
+          "tool_failed": false,
+          "citations": [
+            "[04_订单延迟处理SOP.md / 订单延迟处理SOP / 4. 客户沟通话术]",
+            "[04_订单延迟处理SOP.md / 订单延迟处理SOP / 1. 适用范围]",
+            "[04_订单延迟处理SOP.md / 订单延迟处理SOP / 3. 处理流程]"
+          ]
+        },
+        {
+          "name": "prepare_ticket",
+          "retrieval_method": null,
+          "arguments": {
+            "order_id": "JD2026002",
+            "summary": "订单JD2026002在华北干线运输节点出现延迟，预计新的送达时间为2026-05-07。",
+            "user_id": "acceptance-user",
+            "conversation_id": "acceptance-chat"
+          },
+          "tool_failed": false,
+          "citations": []
+        }
+      ],
+      "answer": "已为您准备异常工单草稿，工单号为 P-d15e979e2e180c25。请发送以下完整确认短语以创建正式工单：\n\n确认创建工单 P-d15e979e2e180c25\n\n当前订单状态：延迟  \n当前节点：华北干线运输节点  \n预计送达时间：2026-05-07  \n工单草稿有效期：2026-10-19T08:12:27+00:00  \n\n制度依据：  \n- [04_订单延迟处理SOP.md / 订单延迟处理SOP / 3. 处理流程]：对严重延迟订单创建异常工单。  \n\n下一步：发送确认短语以创建正式工单。",
+      "model": "Qwen/Qwen3-14B"
+    },
+    {
+      "question": "根据物流SOP告诉我明天上海会不会下雨；没有相关依据就明确说明。",
+      "tools": [],
+      "answer": "物流SOP中未提及天气相关信息，因此无法根据物流SOP判断明天上海是否会下雨。",
+      "model": "Qwen/Qwen3-14B"
+    }
+  ],
+  "index": {
+    "status": "reopened",
+    "collection": "logisupply_sop_c772f06c5ac90ba1ed0c442c",
+    "corpus_version": "c772f06c5ac90ba1ed0c442ca020533c1ae0e6abe9fed4e11ddb85978f424a1b",
+    "documents": 10,
+    "chunks": 53,
+    "embedding_model": "BAAI/bge-m3",
+    "dimensions": 1024,
+    "vector_backend": "milvus_server",
+    "index_type": "FLAT",
+    "metric_type": "COSINE",
+    "consistency": "Strong"
+  },
+  "server_version": "3.0.2",
+  "citation_exact_format": true,
+  "note": "本地自定义工具循环验收，不等于重新发布Dify；模型输出供人工复核，不作为通用准确率",
+  "status": "passed"
+}

@@ -1,0 +1,87 @@
+{
+  "checked_at": "2026-10-19T08:42:43.952092+00:00",
+  "status": "passed",
+  "runtime": "local Docker/WSL: React/FastAPI, self-hosted Dify 1.17.1, SQLite in local Docker volume, Milvus3.0.2",
+  "external_models": "SiliconFlow Qwen/Qwen3-14B and BAAI/bge-m3 APIs permitted by user",
+  "cloud_runtime_dependency": false,
+  "backend_tests": 79,
+  "backend_failures": 0,
+  "frontend_tests": 3,
+  "frontend_build": "passed",
+  "dify_api_acceptance": {
+    "report": "local_acceptance.json",
+    "ticket_id": "T-5030ab71d6875802",
+    "passed": true,
+    "scope": "rerun after business-volume migration, including writes and close"
+  },
+  "browser_acceptance": {
+    "report": "local_browser_acceptance.json",
+    "ticket_id": "T-7e5ba70603d5c035",
+    "passed": true,
+    "scope": "actual desktop Edge query, cited SOP, authoritative card, confirm, operator transitions, user progress"
+  },
+  "persistence": {
+    "report": "local_persistence.json",
+    "passed": true,
+    "scope": "stop/start after volume migration; original two tickets retained, then another API acceptance created/closed a third ticket"
+  },
+  "retrieval": {
+    "retrieval_method": "hybrid_bm25_milvus_rrf",
+    "degraded": false,
+    "query": "冷链温度报警应该如何处理"
+  },
+  "semantic_evaluation": {
+    "report": "hybrid_retrieval.json",
+    "questions": 35,
+    "top1": 33,
+    "top3": 35,
+    "scope": "earlier Milvus semantic evaluation; unchanged retrieval code, not answer accuracy"
+  },
+  "ports": {
+    "app": 8020,
+    "dify": 8088,
+    "milvus": 19530,
+    "milvus_health": 19091
+  },
+  "business_volume": "logisupply-dify_business_data",
+  "failures_retained": "local_initialization_history.json",
+  "credentials": "gitignored dify/local/selfhost, values omitted",
+  "private_credential_scan": "passed for Git-visible files",
+  "source_sha256": {
+    "order_api/main.py": "95e4ce0af58860851a11a9a8d490e8c9bc167e1f2e9d9f7f87ba775c16c254a3",
+    "order_api/web_gateway.py": "dec96df96fff64dbb60a792199b1de8807ae7547d585a0c911e31635d569f57c",
+    "order_api/rag.py": "436ce35b9f49387979c1da1020bc7d27fe152482261bb6f5f9fc3e53092510f8",
+    "order_api/rag_index.py": "67e6b80f005ed5ee985342ebf362b0427d1ace8997974a6eea7b60c932f27ec3",
+    "order_api/Dockerfile": "97e101dd4d6d50a27d3404bc81ee57405106c319ce0631bcd8907d3899bc6a72",
+    "web/src/App.tsx": "c2d5e479f547d748dfe3ab6f29ca1fdae1fa8b462fb7c45abae56ef3632aa3a7",
+    "web/src/types.ts": "a29d615750cd33c38467dfdede42c1e223b10fc75af025f5710781e4a465fe77",
+    "deploy/dify/prepare.py": "398b56e42da2038789470e18f561bfcab135c010b7db9588773fa9bd5b086f45",
+    "deploy/dify/bootstrap.py": "affa78c11be4eae0b09ad32e8f87c5f34b54157b4ae3e69757c6b334791a50f3",
+    "deploy/dify/migrate_business.py": "e430f0e1c9874fb40190f503c020d22ac20d7f97e819aba30718dd374b251485",
+    "deploy/dify/compose.yml": "b24ffc9c0f056bc838b3ffc0458db26d99e500cad031fc07cb8ec3f693b22395",
+    "deploy/dify/nginx.conf": "d543830fc78ee71c7d9e71156498ccca128208dc5293ddd2dab2d68524e7c477",
+    "compose.rag.yml": "24e2de5ce47f8fccee31f7aa4b75e5da81f9da69e7fb09bce01ae04f35818094",
+    "start-local.ps1": "1ff17b0cd0c004703f904b22fd9a8c88d6fb33fed703f8631aa9ff6ce5cd7ef8",
+    "stop-local.ps1": "7aad8750c0579d710b190f6410fbe2e016489e4267988e80f3a31b6994cd58e6",
+    "status-local.ps1": "1f0a294c312f828ca6fd103357a28ef6c45d6bc030267946f4bf6b8ac42528e4",
+    "evaluation/local_acceptance.py": "e176e39777b4bf7d6cfdfd3672a3cf0e1c670b659ee1de09b779a382151c9473",
+    "tests/conftest.py": "0d0b84a1d5bf759e54ebb9151217ae7ce73e82ea89990799ba56c2c2c7eaa645",
+    "tests/test_web_gateway.py": "ec0f1d4ab130c008b556ff06ebf548b206c0ffa07e188c68df06ece94ecae999"
+  },
+  "resume_qa": {
+    "pages": 1,
+    "font_pt": 10.25,
+    "fill_percent": 96.3,
+    "links": 2,
+    "unrelated_sections_preserved": true,
+    "table_project_remains_removed": true
+  },
+  "limits": [
+    "Not offline model inference",
+    "Synthetic orders and operator actions",
+    "No enterprise ACL, HA or load-test claims",
+    "Old cloud resources retained and not stopped/deleted",
+    "Workspace changes not committed/pushed to GitHub"
+  ],
+  "later_follow_up": "本报告记录本机验收时状态；随后用户要求停止Railway并推送代码，云端下线以railway_shutdown.json为准，不能将本报告的历史限制当作最新部署状态。"
+}

@@ -641,16 +641,16 @@ export default function App() {
           <div className="topbar-right">
             <span className="connection">
               <i />
-              {boot.chat_available ? "云端已连接" : "聊天待配置"}
+              {boot.chat_available ? (boot.deployment_mode === "local" ? "本地 Dify 已配置" : "智能体已配置") : "聊天待配置"}
             </span>
-            <a
-              href="https://udify.app/chat/iQSkaDn48xNeqMpK"
+            {boot.dify_console_url && <a
+              href={boot.dify_console_url}
               target="_blank"
               rel="noreferrer"
             >
-              原版聊天页
+              Dify 工作台
               <ExternalLink size={13} />
-            </a>
+            </a>}
           </div>
         </div>
         <div className="demo-banner">

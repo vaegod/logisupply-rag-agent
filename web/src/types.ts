@@ -51,6 +51,8 @@ export type Bootstrap = {
   orders: Order[];
   operator: boolean;
   chat_available: boolean;
+  deployment_mode?: "local" | "remote";
+  dify_console_url?: string;
   identity_notice: string;
 };
 export type TicketList = {

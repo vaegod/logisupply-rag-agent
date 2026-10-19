@@ -1,0 +1,69 @@
+{
+  "checked_at": "2026-10-19T07:49:18.232488+00:00",
+  "status": "passed",
+  "backend_tests": 74,
+  "frontend_tests": 3,
+  "frontend_build": "passed",
+  "semantic_cases": 35,
+  "real_model_cases": 3,
+  "milvus": {
+    "checked_at": "2026-10-19T07:43:46.318820+00:00",
+    "server_version": "3.0.2",
+    "index": {
+      "status": "reopened_after_restart",
+      "collection": "logisupply_sop_c772f06c5ac90ba1ed0c442c",
+      "corpus_version": "c772f06c5ac90ba1ed0c442ca020533c1ae0e6abe9fed4e11ddb85978f424a1b",
+      "documents": 10,
+      "chunks": 53,
+      "embedding_model": "BAAI/bge-m3",
+      "dimensions": 1024,
+      "vector_backend": "milvus_server",
+      "index_type": "FLAT",
+      "metric_type": "COSINE",
+      "consistency": "Strong"
+    },
+    "rows": 53,
+    "restart_completed": true,
+    "storage": "logisupply-milvus_milvus_data命名卷",
+    "scope": "本轮新建本机Milvus容器，未重启原云端服务或其他数据库",
+    "retrieval_method": "hybrid_bm25_milvus_rrf",
+    "embedding_kind": "real_api",
+    "milvus_lite_also_verified": true,
+    "recovery_observation": "重启初期一次Strong查询出现503通道不可用，后续重试恢复且检索通过；不是零中断保证。"
+  },
+  "metrics": {
+    "questions": 35,
+    "document_bm25": {
+      "hit_at_1": 0.8,
+      "hit_at_3": 1.0,
+      "mean_required_document_recall_at_3": 0.9857
+    },
+    "chunk_bm25": {
+      "hit_at_1": 0.8857,
+      "hit_at_3": 0.9429,
+      "mean_required_document_recall_at_3": 0.9286
+    },
+    "dense": {
+      "hit_at_1": 0.9429,
+      "hit_at_3": 0.9714,
+      "mean_required_document_recall_at_3": 0.9714
+    },
+    "hybrid": {
+      "hit_at_1": 0.9429,
+      "hit_at_3": 1.0,
+      "mean_required_document_recall_at_3": 1.0
+    }
+  },
+  "cloud_rag_republished": false,
+  "scope": "本地迁移，原Agent与工单流程保留，Qdrant旧数据和报告保留",
+  "source_sha256": {
+    "order_api/rag.py": "436ce35b9f49387979c1da1020bc7d27fe152482261bb6f5f9fc3e53092510f8",
+    "order_api/rag_index.py": "67e6b80f005ed5ee985342ebf362b0427d1ace8997974a6eea7b60c932f27ec3",
+    "order_api/requirements.txt": "56369bfbdc6eeb85fd2dc1214ffe7eab781b87e865a94bed890285f9e48f4bbd",
+    "requirements-dev.txt": "6306df422f924c4f0eb985deddba429fdb0c3829b8be5b336909ec0d9a08447e",
+    "compose.rag.yml": "24e2de5ce47f8fccee31f7aa4b75e5da81f9da69e7fb09bce01ae04f35818094",
+    "evaluation/hybrid_eval.py": "bf603f700a8af931fa8bebf447457a024a78914732d542cffc1f1862b9e4745c",
+    "evaluation/hybrid_acceptance.py": "d5aa979974e4cf6732ca898f43ad0f608db9a14460a27f518da7a3a87d441ce6",
+    "tests/test_hybrid_rag.py": "6726116dcf5a1ee60467a48dfcbcc1913950a424df36cd5b055c5ee18dfa43c6"
+  }
+}

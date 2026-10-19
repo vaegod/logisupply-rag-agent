@@ -136,3 +136,23 @@ def test_sessions_survive_app_recreation_and_login_throttle(web):
     for _ in range(5):
         assert restored.post('/web/operator/login', json={'password': 'wrong'}).status_code == 401
     assert restored.post('/web/operator/login', json={'password': PASSWORD}).status_code == 429
+
+
+@pytest.mark.parametrize('base', ['http://127.0.0.1:8088/v1', 'http://nginx/v1'])
+def test_local_dify_http_requires_explicit_flag_and_reports_local_mode(tmp_path, base):
+    with pytest.raises(ValueError, match='HTTPS'):
+        register_web_routes(FastAPI(), Database(tmp_path/'reject.db'), dify_key='local-key', dify_base=base)
+    app=FastAPI()
+    register_web_routes(app, Database(tmp_path/'local.db'), dify_key='local-key', dify_base=base,
+                        allow_local_dify_http=True, dify_console_url='http://127.0.0.1:8088')
+    data=TestClient(app).get('/web/bootstrap').json()
+    assert data['deployment_mode']=='local' and data['chat_available']
+    assert data['dify_console_url']=='http://127.0.0.1:8088'
+    assert 'local-key' not in str(data)
+
+
+@pytest.mark.parametrize('base', ['http://external.example/v1', 'http://user:secret@nginx/v1', 'ftp://nginx/v1'])
+def test_local_flag_does_not_allow_arbitrary_plain_http(tmp_path, base):
+    with pytest.raises(ValueError):
+        register_web_routes(FastAPI(), Database(tmp_path/'reject.db'), dify_key='local-key', dify_base=base,
+                            allow_local_dify_http=True)

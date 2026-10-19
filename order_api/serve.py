@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import uvicorn
+from dotenv import load_dotenv
 
 from .database import Database
 from .main import create_app
@@ -54,6 +55,7 @@ def build_application(settings: Settings):
 
 
 def main():
+    load_dotenv(Path(__file__).resolve().parents[1] / ".env", override=False)
     settings = load_settings()
     uvicorn.run(build_application(settings), host="0.0.0.0", port=settings.port, workers=1)
 
