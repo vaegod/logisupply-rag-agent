@@ -1,0 +1,14 @@
+{
+  "scope": "local HTTP API and deterministic confirmation only; no Dify or LLM inference",
+  "timestamp_utc": "2026-10-19T02:08:33.340907+00:00",
+  "passed": true,
+  "checks": [
+    "SQLite order lookup via running HTTP service",
+    "Tracking snapshot and citable SOP retrieval",
+    "Generic assent rejected without ticket creation",
+    "Deterministic gate confirmation and idempotent creation",
+    "Operator lifecycle and persisted event history via HTTP"
+  ],
+  "ticket_id": "T-eb27cd6e4e3445e0",
+  "final_status": "closed"
+}

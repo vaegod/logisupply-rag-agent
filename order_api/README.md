@@ -1,3 +1,7 @@
+# V2 工具服务
+
+推荐从仓库根目录运行 `python -m order_api.run_demo`，使用 SQLite 和独立工具/操作员密钥。详见 [Agent 升级与联调](../dify/Agent升级与联调.md)。下文保留 V1 模拟接口的说明。
+
 # Order API
 
 本目录提供给 Dify Chatflow 调用的模拟物流订单接口。

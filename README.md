@@ -1,4 +1,20 @@
-# 物流供应链知识库与工具调用工作流
+# 物流工具调用智能体与异常工单闭环
+
+## V2 升级
+
+新增 Dify 经典 Agent / Function Calling 模板，由模型自主选择订单查询、轨迹查询、SOP 检索、工单草稿和进度查询工具。用户在 Dify 自带聊天页发送完整确认短语后，由独立分支创建工单；操作员使用独立接口推进处理、解决和关闭，全部事件保存在 SQLite。
+
+- [V2 配置、部署与验收说明](dify/Agent升级与联调.md)
+- [Agent Chatflow DSL](dify/logisupply_agent.dify.yml)（模型、provider 和服务地址需绑定）
+- [工具 OpenAPI](dify/agent_tools.openapi.json)
+- [Agent 系统指令](prompts/logistics_agent_prompt.md)
+- [在线验收场景](evaluation/agent_cases.json)
+
+快速启动：`python -m pip install -r requirements-dev.txt`，然后 `python -m order_api.run_demo`。服务为 `http://127.0.0.1:8018`，密钥自动生成在 Git 忽略的 `dify/local/runtime.json`，数据库为 `order_api/data/logisupply.db`。Dify Cloud 还需要公网可达的工具后端。模板和本地测试不等于已完成真实 Dify 端到端验证。
+
+2026-10-19 验证：36项测试和原离线基线通过；[本地真实 HTTP 工单验收](evaluation/results/agent_local_acceptance.json)完成至 closed；[Dify 原应用预览证据](evaluation/results/dify_preview_status.json)确认模型自主选择 query_order，但云端工具请求因后端未接通而失败。原应用草稿已更新，未发布。
+
+以下为保留的 V1 介绍与对照基线。
 
 [![CI](https://github.com/vaegod/logisupply-rag-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/vaegod/logisupply-rag-agent/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -7,7 +23,7 @@
 
 本项目面向物流、仓储和供应链业务场景，使用 Dify Chatflow 编排知识检索、参数提取和 HTTP 工具调用，使用 FastAPI 提供模拟订单接口。系统支持物流业务文档问答、订单状态查询和异常处理建议，并通过自建测试集建立本地基线与 Dify 端到端评测入口。
 
-当前实现属于路径预先定义的工作流应用，不是能够自主规划和选择任意工具的通用 Agent。
+V1 实现属于路径预先定义的工作流应用。V2 新增有限工具集合上的 Agent 自主选择；工单写入仍由确定性确认分支处理。
 
 项目聚焦业务落地与工程可复现性，重点展示以下能力：
 

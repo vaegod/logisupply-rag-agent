@@ -1,3 +1,11 @@
+# V2 Agent 导入入口
+
+新增 logisupply_agent.dify.yml 与工作区配置生成器 build_agent.py；在原画布空白处右键 → 导入应用，可覆盖当前草稿并保留原应用 ID。先导出备份，配置完成后验证，再发布。完整步骤见 [Agent 升级与联调](Agent升级与联调.md)。
+
+以下为原 V1 DSL 的说明。
+
+---
+
 # Dify DSL 导入说明
 
 ## 文件

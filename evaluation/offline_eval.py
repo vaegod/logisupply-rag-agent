@@ -8,8 +8,6 @@ import re
 import statistics
 import sys
 import time
-from collections import Counter
-from dataclasses import dataclass
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).parents[1]
@@ -17,6 +15,7 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 from order_api.main import find_order
+from order_api.knowledge import BM25Index, load_documents, tokenize
 
 
 DOCS_DIR = ROOT_DIR / "docs"
@@ -25,8 +24,6 @@ RETRIEVAL_FILE = Path(__file__).parent / "retrieval_cases.csv"
 RESULTS_DIR = Path(__file__).parent / "results"
 
 ORDER_ID_PATTERN = re.compile(r"JD\d{7}", re.IGNORECASE)
-ASCII_WORD_PATTERN = re.compile(r"[a-z0-9]+")
-CHINESE_PATTERN = re.compile(r"[\u4e00-\u9fff]+")
 EXCEPTION_ACTION_TERMS = (
     "怎么处理",
     "如何处理",
@@ -42,74 +39,6 @@ EXCEPTION_ACTION_TERMS = (
     "处理步骤",
     "连续投诉",
 )
-
-
-def tokenize(text: str) -> list[str]:
-    """Tokenize mixed Chinese/ASCII text without third-party dependencies."""
-    normalized = text.lower()
-    tokens = ASCII_WORD_PATTERN.findall(normalized)
-
-    for segment in CHINESE_PATTERN.findall(normalized):
-        tokens.extend(segment)
-        tokens.extend(segment[index : index + 2] for index in range(len(segment) - 1))
-
-    return tokens
-
-
-@dataclass
-class BM25Index:
-    documents: dict[str, str]
-    k1: float = 1.5
-    b: float = 0.75
-
-    def __post_init__(self) -> None:
-        self.doc_tokens = {
-            name: tokenize(content) for name, content in self.documents.items()
-        }
-        self.doc_freq: Counter[str] = Counter()
-        for tokens in self.doc_tokens.values():
-            self.doc_freq.update(set(tokens))
-        self.doc_count = len(self.doc_tokens)
-        self.avg_doc_length = (
-            sum(len(tokens) for tokens in self.doc_tokens.values()) / self.doc_count
-            if self.doc_count
-            else 0.0
-        )
-
-    def score(self, query: str, document_name: str) -> float:
-        query_tokens = tokenize(query)
-        document_tokens = self.doc_tokens[document_name]
-        term_frequency = Counter(document_tokens)
-        document_length = len(document_tokens)
-        score = 0.0
-
-        for token in query_tokens:
-            frequency = term_frequency[token]
-            if not frequency:
-                continue
-            document_frequency = self.doc_freq[token]
-            inverse_document_frequency = math.log(
-                1 + (self.doc_count - document_frequency + 0.5) / (document_frequency + 0.5)
-            )
-            denominator = frequency + self.k1 * (
-                1 - self.b + self.b * document_length / self.avg_doc_length
-            )
-            score += inverse_document_frequency * frequency * (self.k1 + 1) / denominator
-
-        return score
-
-    def search(self, query: str) -> list[tuple[str, float]]:
-        return sorted(
-            ((name, self.score(query, name)) for name in self.documents),
-            key=lambda item: (-item[1], item[0]),
-        )
-
-
-def load_documents() -> dict[str, str]:
-    return {
-        path.name: path.read_text(encoding="utf-8")
-        for path in sorted(DOCS_DIR.glob("[0-9][0-9]_*.md"))
-    }
 
 
 def load_csv(path: Path) -> list[dict[str, str]]:

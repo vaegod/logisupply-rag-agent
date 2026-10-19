@@ -1,0 +1,10 @@
+.git
+.venv
+**/__pycache__
+**/*.db*
+order_api/data
+dify/local
+.env
+.env.*
+screenshots
+.pytest_cache

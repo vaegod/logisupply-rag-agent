@@ -19,6 +19,11 @@ htmlcov/
 evaluation/eval_result.csv
 evaluation/eval_summary.json
 evaluation/results/*.tmp
+order_api/data/
+*.db
+*.db-shm
+*.db-wal
+dify/local/
 
 .idea/
 .vscode/

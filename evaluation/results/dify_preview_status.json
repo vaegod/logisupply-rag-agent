@@ -1,0 +1,23 @@
+{
+  "scope": "Dify Cloud preview of original application, not a successful backend end-to-end run",
+  "app_id": "b52a5bb7-da97-414a-acd0-4dfc34b1e300",
+  "model": "Qwen/Qwen3-14B",
+  "strategy": "function_calling",
+  "model_selected_tools": [
+    {
+      "tool_call_name": "query_order",
+      "tool_call_input": {
+        "order_id": "JD2026002"
+      },
+      "tool_response": "tool invoke error: read tool response failed: request failed: 500 Internal Server Error"
+    }
+  ],
+  "backend_status": "blocked: no reachable V2 public backend configured",
+  "publication": "not published; original published version retained",
+  "local_http_acceptance": "evaluation/results/agent_local_acceptance.json",
+  "limitation": "A successful Dify workflow status can include failed tool calls; inspect tool_response separately.",
+  "answer_variable_rendering": "passed after changing node identifiers to underscore-separated names; Dify preview returned a real Chinese greeting rather than a literal template",
+  "template_regression_check": "tests/test_agent_dsl.py validates reference identifier syntax",
+  "corrected_preview_answer": "当前无法查询到订单 JD2026002 的状态，请稍后再试或提供更多信息。",
+  "screenshot": "screenshots/08_agent_preview.png"
+}
