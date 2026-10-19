@@ -3,7 +3,7 @@ import re
 
 import yaml
 
-from dify.build_agent import GATE_CODE, FORMAT_CODE, ROOT, build
+from dify.build_agent import GATE_CODE, FORMAT_CODE, QUERY_FORMAT_CODE, ROOT, build
 
 
 def run(code, **kwargs):
@@ -51,6 +51,31 @@ def test_confirmation_response_does_not_mask_errors():
         assert "已创建" not in text
     body = json.dumps({"created": True, "ticket": {"ticket_id": "T-abc", "order_id": "JD2026002", "status": "open", "summary": "演示问题"}})
     assert "T-abc" in run(FORMAT_CODE, body=body, status_code=200)["text"]
+
+
+def test_explicit_ticket_query_is_routed_to_a_fresh_http_read():
+    query = "查询工单 T-0123456789abcdef 的当前处理状态和记录。"
+    result = run(GATE_CODE, query=query, user_id="current-user", conversation_id="chat")
+    assert result["is_ticket_query"] == "yes"
+    assert json.loads(result["ticket_query_body"]) == {"user_id": "current-user", "ticket_id": "T-0123456789abcdef"}
+    ambiguous = query + "还有 T-fedcba9876543210 的状态"
+    assert run(GATE_CODE, query=ambiguous, user_id="user", conversation_id="chat")["is_ticket_query"] == "no"
+    dsl, _ = build()
+    graph = dsl["workflow"]["graph"]
+    node = next(item["data"] for item in graph["nodes"] if item["id"] == "query_ticket_live")
+    assert node["body"]["data"][0]["value"] == "{{#confirmation_gate.ticket_query_body#}}"
+    assert [e["source"] for e in graph["edges"] if e["target"] == "format_ticket_query"] == ["query_ticket_live"]
+
+
+def test_ticket_query_formatter_does_not_reuse_previous_status():
+    ticket = {"ticket_id": "T-0123456789abcdef", "order_id": "JD2026002", "updated_at": "2026-10-19T00:00:00Z", "summary": "模拟延迟工单", "events": []}
+    for status, label in [("resolved", "已解决"), ("closed", "已关闭")]:
+        body = json.dumps({"tickets": [{**ticket, "status": status}]})
+        text = run(QUERY_FORMAT_CODE, body=body, status_code=200)["text"]
+        assert f"{label}（{status}）" in text
+        if status == "closed":
+            assert "已解决" not in text
+    assert "未查询到" in run(QUERY_FORMAT_CODE, body='{"tickets":[]}', status_code=404)["text"]
 
 
 def test_committed_templates_match_generator_and_references_resolve():

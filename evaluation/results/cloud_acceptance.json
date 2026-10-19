@@ -1,0 +1,53 @@
+{
+  "scope": "real deployed backend plus published Dify multi-turn acceptance",
+  "run_id": "892be77acbc64f36a7bb531bbac219e6",
+  "timestamp_utc": "2026-10-19T02:48:57.603216+00:00",
+  "backend_origin": "https://logisupply-api-production.up.railway.app",
+  "steps": [
+    "Public HTTPS health, order, tracking and SOP tools succeeded",
+    "Real cloud ticket creation, idempotency and operator lifecycle succeeded",
+    "Dify draft, exact user confirmation, duplicate confirmation and lifecycle progress succeeded"
+  ],
+  "dify_turns": [
+    {
+      "query": "查询 JD2026003 温度异常情况，检索处理规范，并帮我准备异常工单。",
+      "answer": "\n\n\n已为您准备异常工单草稿，工单号为 P-c08a30dcd64d293d，有效期至 2026-10-19 03:19:26。请发送以下完整确认短语以创建工单：\n\n确认创建工单 P-c08a30dcd64d293d",
+      "message_id": "3685da1f-babf-43ea-8f90-ab6de1dfaefd",
+      "latency_seconds": 18.114
+    },
+    {
+      "query": "确认创建工单 P-c08a30dcd64d293d",
+      "answer": "工单已创建\n工单号：T-939a1a981b244886\n订单号：JD2026003\n状态：open\n摘要：订单 JD2026003 在冷链仓储中心出现温度异常报警，当前状态为异常，预计送达时间为 2026-05-04，最后更新时间为 2026-05-03 11:20:00。\n可继续询问工单进度；处理状态由运营人员更新。",
+      "message_id": "83b7672c-c691-469c-b479-708468aa14dd",
+      "latency_seconds": 2.188
+    },
+    {
+      "query": "确认创建工单 P-c08a30dcd64d293d",
+      "answer": "工单已存在，本次未重复创建\n工单号：T-939a1a981b244886\n订单号：JD2026003\n状态：open\n摘要：订单 JD2026003 在冷链仓储中心出现温度异常报警，当前状态为异常，预计送达时间为 2026-05-04，最后更新时间为 2026-05-03 11:20:00。\n可继续询问工单进度；处理状态由运营人员更新。",
+      "message_id": "450bf920-7231-4195-a394-2b4031a3176a",
+      "latency_seconds": 2.42
+    },
+    {
+      "query": "查询工单 T-939a1a981b244886 的当前处理状态和记录。",
+      "answer": "工单号：T-939a1a981b244886\n订单号：JD2026003\n当前状态：处理中（processing）\n更新时间：2026-10-19T02:49:36+00:00\n摘要：订单 JD2026003 在冷链仓储中心出现温度异常报警，当前状态为异常，预计送达时间为 2026-05-04，最后更新时间为 2026-05-03 11:20:00。\n处理记录：\n2026-10-19T02:49:32+00:00 | 新建 → open | 用户确认创建：订单 JD2026003 在冷链仓储中心出现温度异常报警，当前状态为异常，预计送达时间为 2026-05-04，最后更新时间为 2026-05-03 11:20:00。\n2026-10-19T02:49:36+00:00 | open → processing | 云端验收模拟处理步骤：processing\n以上状态来自本轮工单接口查询。",
+      "message_id": "b185a3bd-fd29-4885-9aab-51bbec74841c",
+      "latency_seconds": 2.893
+    },
+    {
+      "query": "查询工单 T-939a1a981b244886 的当前处理状态和记录。",
+      "answer": "工单号：T-939a1a981b244886\n订单号：JD2026003\n当前状态：已解决（resolved）\n更新时间：2026-10-19T02:49:41+00:00\n摘要：订单 JD2026003 在冷链仓储中心出现温度异常报警，当前状态为异常，预计送达时间为 2026-05-04，最后更新时间为 2026-05-03 11:20:00。\n解决说明：云端验收模拟处理步骤：resolved\n处理记录：\n2026-10-19T02:49:32+00:00 | 新建 → open | 用户确认创建：订单 JD2026003 在冷链仓储中心出现温度异常报警，当前状态为异常，预计送达时间为 2026-05-04，最后更新时间为 2026-05-03 11:20:00。\n2026-10-19T02:49:36+00:00 | open → processing | 云端验收模拟处理步骤：processing\n2026-10-19T02:49:41+00:00 | processing → resolved | 云端验收模拟处理步骤：resolved\n以上状态来自本轮工单接口查询。",
+      "message_id": "55f54347-4f6d-42b8-ba6d-5243d48b39e0",
+      "latency_seconds": 2.446
+    },
+    {
+      "query": "查询工单 T-939a1a981b244886 的当前处理状态和记录。",
+      "answer": "工单号：T-939a1a981b244886\n订单号：JD2026003\n当前状态：已关闭（closed）\n更新时间：2026-10-19T02:49:45+00:00\n摘要：订单 JD2026003 在冷链仓储中心出现温度异常报警，当前状态为异常，预计送达时间为 2026-05-04，最后更新时间为 2026-05-03 11:20:00。\n解决说明：云端验收模拟处理步骤：resolved\n处理记录：\n2026-10-19T02:49:32+00:00 | 新建 → open | 用户确认创建：订单 JD2026003 在冷链仓储中心出现温度异常报警，当前状态为异常，预计送达时间为 2026-05-04，最后更新时间为 2026-05-03 11:20:00。\n2026-10-19T02:49:36+00:00 | open → processing | 云端验收模拟处理步骤：processing\n2026-10-19T02:49:41+00:00 | processing → resolved | 云端验收模拟处理步骤：resolved\n2026-10-19T02:49:45+00:00 | resolved → closed | 云端验收模拟处理步骤：closed\n以上状态来自本轮工单接口查询。",
+      "message_id": "1cff7890-c44e-4160-a2b8-e500cbe2d867",
+      "latency_seconds": 2.896
+    }
+  ],
+  "api_ticket_id": "T-71096561c605efa5",
+  "dify_ticket_id": "T-939a1a981b244886",
+  "conversation_id": "ff834b04-ccfb-4abe-a0e8-578ed0da4272",
+  "passed": true
+}

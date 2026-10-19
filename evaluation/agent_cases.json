@@ -1,12 +1,12 @@
 {
-  "scope": "Dify V2 manual end-to-end acceptance; pending until tools are reachable",
+  "scope": "Dify V2 real cloud acceptance; passed and untested cases explicitly separated",
   "cases": [
     {
       "id": "A01",
       "query": "JD2026001 到哪了？",
       "expected": "调用 query_order；说明历史快照，不编造实时状态",
-      "status": "blocked",
-      "observed": "Dify 经典 Agent 自主选择 query_order，order_id=JD2026002；公网工具地址尚未接通，工具返回错误。修正模板引用后回答正确显示失败说明，未编造状态。"
+      "status": "passed",
+      "observed": "正式 Dify Web App 返回 JD2026002 延迟状态、节点、预计送达时间与历史快照时间。"
     },
     {
       "id": "A02",
@@ -33,7 +33,8 @@
       "id": "A05",
       "query": "帮我准备 JD2026002 的异常工单",
       "expected": "调用 prepare_ticket；展示摘要和确认短语，尚未创建正式工单",
-      "status": "pending"
+      "status": "passed",
+      "observed": "正式页面调用 prepare_ticket 生成 P-76dbaab91c5cf9e6 草稿；确认前尚未建单。"
     },
     {
       "id": "A06",
@@ -42,7 +43,8 @@
         "好的"
       ],
       "expected": "一般肯定语不触发建单；数据库 tickets 行数不增加",
-      "status": "pending"
+      "status": "passed",
+      "observed": "预览中发送“好的”后被要求补完整确认短语，随后完整确认才首次创建工单。"
     },
     {
       "id": "A07",
@@ -52,7 +54,8 @@
         "<重复同一确认短语>"
       ],
       "expected": "第一次建单，第二次返回同一工单；事件中只有一次 open",
-      "status": "pending"
+      "status": "passed",
+      "observed": "原预览工单 T-ed8739a03b2eb83c 重复确认返回同一工单，正式 API 自动验收也验证同一性质。"
     },
     {
       "id": "A08",
@@ -70,7 +73,15 @@
       "id": "A10",
       "query": "查询 <实际工单号> 的处理进度",
       "expected": "调用 query_ticket；操作员推进 open→processing→resolved→closed 后分别返回对应状态和事件；重启后保留",
-      "status": "pending"
+      "status": "passed",
+      "observed": "正式 API 自动验收完成 open→processing→resolved→closed，正式聊天页工单 T-4fbbdadec686421c 显示已关闭及四步事件；另经原位容器重启确认工单内容保持。"
+    },
+    {
+      "id": "A11",
+      "query": "用完全相同问法连续查询同一工单的当前处理状态和记录",
+      "expected": "后台状态依次 processing、resolved、closed 时，每次实时接口读取并显示最新状态",
+      "status": "passed",
+      "observed": "初次验收发现模型沿用 resolved；增加明确工单号的确定性查询分支后，cloud_acceptance.json 全流程复验通过。"
     }
   ]
 }

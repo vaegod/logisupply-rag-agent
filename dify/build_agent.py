@@ -24,10 +24,40 @@ import re
 
 def main(query: str, user_id: str, conversation_id: str) -> dict:
     match = re.fullmatch(r"确认创建工单 (P-[0-9a-f]{16})", query.strip())
+    ticket_ids = set(re.findall(r"T-[0-9a-f]{16}", query))
+    ticket_query = len(ticket_ids) == 1 and any(word in query for word in ("查", "进度", "状态", "记录", "结果"))
     return {"is_confirmation": "yes" if match else "no",
+            "is_ticket_query": "yes" if ticket_query else "no",
+            "ticket_query_body": json.dumps({"user_id": user_id, "ticket_id": next(iter(ticket_ids)) if ticket_query else ""}, ensure_ascii=False),
             "body": json.dumps({"proposal_id": match.group(1) if match else "",
                                 "user_message": query, "user_id": user_id,
                                 "conversation_id": conversation_id}, ensure_ascii=False)}
+'''
+
+QUERY_FORMAT_CODE = '''import json
+
+def main(body: str, status_code: int) -> dict:
+    try:
+        data = json.loads(body)
+    except (ValueError, TypeError):
+        return {"text": "工单查询服务响应异常，无法确认最新状态，请稍后重试。"}
+    tickets = data.get("tickets", []) if isinstance(data, dict) else []
+    if status_code != 200 or not tickets:
+        return {"text": "未查询到属于当前用户的工单，或查询服务暂不可用。请核对工单号后重试。"}
+    ticket = tickets[0]
+    labels = {"open": "待处理", "processing": "处理中", "resolved": "已解决", "closed": "已关闭"}
+    status = ticket["status"]
+    lines = ["工单号：" + ticket["ticket_id"], "订单号：" + ticket["order_id"],
+             "当前状态：" + labels.get(status, status) + "（" + status + "）",
+             "更新时间：" + ticket["updated_at"], "摘要：" + ticket["summary"]]
+    if ticket.get("resolution"):
+        lines.append("解决说明：" + ticket["resolution"])
+    lines.append("处理记录：")
+    for event in ticket.get("events", []):
+        lines.append(event["occurred_at"] + " | " + (event.get("from_status") or "新建")
+                     + " → " + event["to_status"] + " | " + event["note"])
+    lines.append("以上状态来自本轮工单接口查询。")
+    return {"text": "\\n".join(lines)}
 '''
 
 FORMAT_CODE = '''import json
@@ -83,15 +113,19 @@ def build(provider_id="REPLACE_API_PROVIDER_ID", model_provider="", model_name="
     prompt = (ROOT / "prompts/logistics_agent_prompt.md").read_text(encoding="utf-8").split("---\n", 1)[1].strip()
     nodes = [
         node("start", "start", "用户输入", 0, 300, variables=[]),
-        node("confirmation_gate", "code", "识别用户确认原文", 300, 300,
+        node("confirmation_gate", "code", "识别确认与实时工单查询", 300, 300,
              code_language="python3", code=GATE_CODE,
              variables=[variable("query", ["sys", "query"]), variable("user_id", ["sys", "user_id"]),
                         variable("conversation_id", ["sys", "conversation_id"])],
-             outputs={"is_confirmation": {"type": "string", "children": None}, "body": {"type": "string", "children": None}}),
-        node("confirmation_branch", "if-else", "是否完整确认短语", 600, 300,
+             outputs={name: {"type": "string", "children": None} for name in
+                      ("is_confirmation", "body", "is_ticket_query", "ticket_query_body")}),
+        node("confirmation_branch", "if-else", "确认、实时查询或智能体", 600, 300,
              cases=[{"id": "confirmed", "case_id": "confirmed", "logical_operator": "and", "conditions": [
                  {"id": "confirmed-condition", "variable_selector": ["confirmation_gate", "is_confirmation"],
-                  "varType": "string", "comparison_operator": "is", "value": "yes"}]}]),
+                  "varType": "string", "comparison_operator": "is", "value": "yes"}]},
+                    {"id": "ticket_query", "case_id": "ticket_query", "logical_operator": "and", "conditions": [
+                        {"id": "ticket-query-condition", "variable_selector": ["confirmation_gate", "is_ticket_query"],
+                         "varType": "string", "comparison_operator": "is", "value": "yes"}]}]),
         node("logistics_agent", "agent", "物流工具调用智能体", 900, 500,
              agent_strategy_provider_name="langgenius/agent/agent", agent_strategy_name="function_calling",
              agent_strategy_label="FunctionCalling", plugin_unique_identifier=plugin_id,
@@ -120,6 +154,21 @@ def build(provider_id="REPLACE_API_PROVIDER_ID", model_provider="", model_name="
                         {"variable": "status_code", "value_selector": ["create_ticket", "status_code"], "value_type": "number"}],
              outputs={"text": {"type": "string", "children": None}}),
         node("answer_ticket", "answer", "工单确认答复", 1500, 100, answer="{{#format_ticket.text#}}", variables=[]),
+        node("query_ticket_live", "http-request", "实时查询工单状态", 900, 850,
+             method="POST", url="{{#env.ORDER_API_BASE#}}/tools/query_ticket",
+             authorization={"type": "no-auth", "config": None},
+             headers="Content-Type:application/json\nX-API-Key:{{#env.LOGISUPPLY_TOOL_API_KEY#}}", params="",
+             body={"type": "json", "data": [{"id": "ticket-query-body", "key": "", "type": "text",
+                                            "value": "{{#confirmation_gate.ticket_query_body#}}"}]},
+             timeout={"connect": 10, "read": 30, "write": 30},
+             retry_config={"retry_enabled": True, "max_retries": 1, "retry_interval": 500}),
+        node("format_ticket_query", "code", "展示本轮实时工单记录", 1200, 850,
+             code_language="python3", code=QUERY_FORMAT_CODE,
+             variables=[variable("body", ["query_ticket_live", "body"]),
+                        {"variable": "status_code", "value_selector": ["query_ticket_live", "status_code"], "value_type": "number"}],
+             outputs={"text": {"type": "string", "children": None}}),
+        node("answer_ticket_query", "answer", "工单实时状态答复", 1500, 850,
+             answer="{{#format_ticket_query.text#}}", variables=[]),
     ]
     by_id = {item["id"]: item for item in nodes}
     def edge(source, target, handle="source"):
@@ -145,7 +194,10 @@ def build(provider_id="REPLACE_API_PROVIDER_ID", model_provider="", model_name="
                             edge("start", "confirmation_gate"), edge("confirmation_gate", "confirmation_branch"),
                             edge("confirmation_branch", "logistics_agent", "false"), edge("logistics_agent", "answer_agent"),
                             edge("confirmation_branch", "create_ticket", "confirmed"), edge("create_ticket", "format_ticket"),
-                            edge("format_ticket", "answer_ticket")], "viewport": {"x": 0, "y": 0, "zoom": 0.7}}}}
+                            edge("format_ticket", "answer_ticket"),
+                            edge("confirmation_branch", "query_ticket_live", "ticket_query"),
+                            edge("query_ticket_live", "format_ticket_query"),
+                            edge("format_ticket_query", "answer_ticket_query")], "viewport": {"x": 0, "y": 0, "zoom": 0.7}}}}
     return dsl, spec
 
 

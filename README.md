@@ -12,7 +12,13 @@
 
 快速启动：`python -m pip install -r requirements-dev.txt`，然后 `python -m order_api.run_demo`。服务为 `http://127.0.0.1:8018`，密钥自动生成在 Git 忽略的 `dify/local/runtime.json`，数据库为 `order_api/data/logisupply.db`。Dify Cloud 还需要公网可达的工具后端。模板和本地测试不等于已完成真实 Dify 端到端验证。
 
-2026-10-19 验证：36项测试和原离线基线通过；[本地真实 HTTP 工单验收](evaluation/results/agent_local_acceptance.json)完成至 closed；[Dify 原应用预览证据](evaluation/results/dify_preview_status.json)确认模型自主选择 query_order，但云端工具请求因后端未接通而失败。原应用草稿已更新，未发布。
+2026-10-19 云端验收：后端已部署，原 Dify 应用已发布。本地44项测试、[正式 API 工单全流程](evaluation/results/cloud_acceptance.json)、[容器重启后的数据保留](evaluation/results/cloud_persistence.json)和[正式 Web App](evaluation/results/webapp_acceptance.json)均通过。连续查询同一工单曾出现模型沿用旧状态，已通过实时查询分支修复并[回归验证](evaluation/results/cloud_status_regression.json)。尚未执行的其他在线场景在测试清单中保留 pending。
+
+- [直接使用 Dify 聊天页](https://udify.app/chat/iQSkaDn48xNeqMpK)
+- [公网后端健康检查](https://logisupply-api-production.up.railway.app/health)
+- [云部署说明](docs/云端部署说明.md)
+
+![正式页面工单关闭与处理记录](screenshots/09_cloud_ticket_closed.png)
 
 以下为保留的 V1 介绍与对照基线。
 

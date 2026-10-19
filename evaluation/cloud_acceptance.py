@@ -16,6 +16,8 @@ from urllib import request, error
 from urllib.parse import urlsplit
 from uuid import uuid4
 
+LAST_REPORT: dict = {}
+
 
 def required(name: str) -> str:
     value = os.getenv(name, "").strip()
@@ -36,6 +38,7 @@ def invoke(url: str, body: dict | None, headers: dict, method="POST"):
 
 
 def main():
+    global LAST_REPORT
     base = required("LOGISUPPLY_PUBLIC_URL").rstrip("/")
     parsed = urlsplit(base)
     if parsed.scheme != "https" or not parsed.netloc or parsed.username or parsed.password:
@@ -50,6 +53,7 @@ def main():
     report = {"scope": "real deployed backend plus published Dify multi-turn acceptance",
               "run_id": run_id, "timestamp_utc": datetime.now(timezone.utc).isoformat(),
               "backend_origin": base, "steps": [], "dify_turns": []}
+    LAST_REPORT = report
     def tool(name, body):
         return invoke(base + "/tools/" + name, body, tool_headers)
     def transition(ticket_id, previous, status):
@@ -103,7 +107,7 @@ def main():
                                     ("resolved", "closed", ("已关闭", "closed"))]:
         transition(dify_ticket, previous, status)
         answer = chat(f"查询工单 {dify_ticket} 的当前处理状态和记录。")
-        assert any(term in answer for term in terms), f"Dify did not report state {status}"
+        assert any(term in answer for term in terms), f"Dify did not report state {status}: {answer}"
     report["dify_ticket_id"] = dify_ticket
     report["conversation_id"] = conversation
     report["steps"].append("Dify draft, exact user confirmation, duplicate confirmation and lifecycle progress succeeded")
@@ -117,4 +121,8 @@ if __name__ == "__main__":
     try:
         main()
     except (RuntimeError, AssertionError, error.URLError, TimeoutError) as exc:
+        if LAST_REPORT:
+            LAST_REPORT.update(passed=False, error=str(exc))
+            output = Path(__file__).parent / "results/cloud_acceptance_failed.json"
+            output.write_text(json.dumps(LAST_REPORT, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         raise SystemExit(f"Cloud acceptance did not pass: {exc}")

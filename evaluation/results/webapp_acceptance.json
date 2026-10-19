@@ -1,0 +1,15 @@
+{
+  "scope": "Published Dify built-in Web App acceptance",
+  "url": "https://udify.app/chat/iQSkaDn48xNeqMpK",
+  "passed": true,
+  "checks": [
+    "Order state and archived timestamp displayed",
+    "Delay SOP steps with source 04_订单延迟处理SOP.md",
+    "Proposal displayed and confirmed by exact phrase",
+    "Actual cloud ticket created",
+    "Operator processing, resolved and closed events persisted",
+    "Fresh ticket query displayed closed with full events"
+  ],
+  "ticket_id": "T-4fbbdadec686421c",
+  "screenshot": "screenshots/09_cloud_ticket_closed.png"
+}

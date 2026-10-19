@@ -1,0 +1,10 @@
+{
+  "scope": "real Railway container restart with mounted SQLite volume",
+  "passed": true,
+  "deployment_id": "70b3454a-4fe3-4294-b056-9d925f797e2a",
+  "ticket_id": "T-ed8739a03b2eb83c",
+  "status_before": "processing",
+  "status_after": "processing",
+  "event_count_before": 2,
+  "event_count_after": 2
+}

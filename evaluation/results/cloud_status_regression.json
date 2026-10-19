@@ -1,0 +1,13 @@
+{
+  "scope": "Repeated identical ticket queries after operator updates",
+  "initial_failure": {
+    "ticket_id": "T-3e9bcad67207d8fe",
+    "database_status": "closed",
+    "model_answer_status": "resolved"
+  },
+  "root_cause": "The model reused earlier conversation state instead of querying again",
+  "fix": "Explicit ticket ID status queries are routed through a fresh authorized HTTP query and deterministic formatting; Agent remains available for general tasks",
+  "regression_passed": true,
+  "regression_report": "cloud_acceptance.json",
+  "regression_ticket_id": "T-939a1a981b244886"
+}
