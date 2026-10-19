@@ -260,6 +260,12 @@ def create_app(db_path: str | Path | None = None, *, tool_key: str | None = None
     register_agent_routes(application, Database(db_path or default_db.path),
                           tool_key if tool_key is not None else os.getenv("LOGISUPPLY_TOOL_API_KEY"),
                           admin_key if admin_key is not None else os.getenv("LOGISUPPLY_ADMIN_API_KEY"))
+    from order_api.web_gateway import register_web_routes
+    register_web_routes(application, Database(db_path or default_db.path),
+                        dify_key=os.getenv("DIFY_API_KEY", ""),
+                        dify_base=os.getenv("DIFY_API_BASE", "https://api.dify.ai/v1"),
+                        operator_password=os.getenv("LOGISUPPLY_WEB_OPERATOR_PASSWORD", ""),
+                        public_url=os.getenv("LOGISUPPLY_PUBLIC_URL", ""))
     return application
 
 

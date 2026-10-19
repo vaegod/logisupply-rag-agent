@@ -24,6 +24,11 @@ order_api/data/
 *.db-shm
 *.db-wal
 dify/local/
+web/node_modules/
+web/dist/
+web/test-results/
+web/playwright-report/
+*.tsbuildinfo
 
 .idea/
 .vscode/
