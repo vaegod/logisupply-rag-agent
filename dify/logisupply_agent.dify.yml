@@ -1,6 +1,6 @@
 app:
-  name: 物流异常处理智能体 V2
-  description: Agent 自主选工具 + 用户确认创建工单 + SQLite 历史演示数据
+  name: 物流异常处理智能助手
+  description: 订单查询、SOP 混合检索、用户确认建单与工单进度跟踪
   icon: 🚚
   icon_background: '#E4FBCC'
   mode: advanced-chat
@@ -30,7 +30,7 @@ workflow:
   features:
     file_upload:
       enabled: false
-    opening_statement: 我是物流工具调用助手，可查询历史演示订单、检索 SOP 并生成异常工单草稿。创建工单需要你发送完整确认短语。
+    opening_statement: 我是物流异常处理智能助手，可以查询订单与轨迹、检索 SOP 并准备工单草稿。请核对草稿后确认创建工单。
     retriever_resource:
       enabled: true
     sensitive_word_avoidance:
@@ -168,7 +168,7 @@ workflow:
       height: 110
       data:
         type: agent
-        title: 物流工具调用智能体
+        title: 物流异常处理智能助手
         desc: ''
         selected: false
         agent_strategy_provider_name: langgenius/agent/agent
@@ -195,7 +195,7 @@ workflow:
                 temperature: 0.1
           instruction:
             type: constant
-            value: '你是物流异常处理助手。根据用户目标和已有工具结果，自主选择下一步查询、检索或生成工单草稿，直到获得足够信息再回答。
+            value: '你是物流异常处理智能助手。根据用户目标和已有工具结果，自主选择下一步查询、检索或生成工单草稿，直到获得足够信息再回答。
 
 
               规则：

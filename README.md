@@ -1,11 +1,13 @@
-# 物流异常处理 AI 全栈工作台 · 本地 Dify + Milvus
+# 物流异常处理智能助手
+
+本地 Dify Agent · Milvus 混合检索 RAG · React / FastAPI
 
 [![CI](https://github.com/vaegod/logisupply-rag-agent/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/vaegod/logisupply-rag-agent/actions/workflows/ci.yml?query=branch%3Amain)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-面向物流客服与异常处理操作员的个人演示项目：查询订单和轨迹、检索物流 SOP、准备待确认草稿，经过用户确认创建工单，再由操作员处理、解决和关闭。
+面向物流客服与异常处理操作员，提供订单与轨迹查询、物流 SOP 检索和异常工单协作。Agent 准备处理建议与工单草稿，用户确认后建单，操作员跟进处理、解决和关闭。
 
-**当前运行方式：本机 Dify 1.17.1 + React/TypeScript + FastAPI + SQLite + Milvus 3.0.2。** 应用和数据库在本机 Docker 中运行，Qwen 和 Embedding 继续调用 SiliconFlow API，需要联网；当前运行不依赖 Railway 或 Dify Cloud。
+**当前运行方式：本机 Dify 1.17.1 + React/TypeScript + FastAPI + SQLite + Milvus 3.0.2。** 应用和数据库在本机 Docker 中运行，Qwen 和 Embedding 继续调用 SiliconFlow API，完成回答生成与向量化。
 
 [本地运行说明](docs/本地运行说明.md) · [前端说明](web/README.md) · [Milvus 迁移说明](docs/Milvus迁移说明.md) · [验收报告](evaluation/results/local_delivery.json)
 
@@ -13,20 +15,20 @@
 
 实际本机页面：Agent 查询订单、检索 SOP 后返回文件和章节依据，页面展示从业务数据库读取的待确认草稿。
 
-![本地 Dify 的 SOP 回答与草稿确认](output/playwright/local-rag-draft.png)
+![本地 Dify 的 SOP 回答与草稿确认](output/playwright/assistant-rag-draft.png)
 
-同一张工单经过用户确认和操作员处理后关闭；停止再启动本机服务后，用户仍能查看状态及完整处理事件。
+操作员独立处理异常工单，用户页面同步展示工单状态、解决说明与处理事件。
 
-![本机工单关闭与重启后的完整处理记录](output/playwright/local-user-closed-final.png)
+![本机工单关闭与重启后的完整处理记录](output/playwright/assistant-ticket-closed.png)
 
-截图来自桌面浏览器验收。订单、轨迹和操作员处理均为模拟业务，未接入真实承运商或企业订单系统。
+项目内置四条演示订单与十份物流 SOP，可在本机体验查询、确认建单、处理和归档流程。
 
 ## 核心能力
 
-- **订单与轨迹查询：** 从 SQLite 读取四条历史演示订单及已知物流节点，保留快照时间，不将演示数据当作实时物流。
+- **订单与轨迹查询：** 从 SQLite 读取订单状态、物流节点、预计送达时间与快照时间。
 - **混合检索 RAG：** 十份 Markdown SOP 按章节切成 53 个片段，用 BAAI/bge-m3 生成 1024 维向量；BM25 与 Milvus 向量分别召回，再通过 RRF 融合，返回文件、章节与引用。向量服务或 Embedding 不可用时明确标记 BM25 降级。
-- **受约束 Agent：** Dify 经典 Agent / Function Calling 自主选择订单、轨迹、SOP、草稿和工单查询工具，最多迭代八轮。SOP 检索由 FastAPI 的 `search_sop` 工具执行。
-- **用户确认建单：** 草稿卡片读取数据库记录；用户点击确认后，将完整确认短语作为新消息送入固定建单分支。正式建单接口不交给 Agent 自由调用，事务和唯一约束处理重复确认。
+- **Agent 工具编排：** Dify 经典 Agent / Function Calling 自主选择订单、轨迹、SOP、草稿和工单查询工具，最多迭代八轮。SOP 检索由 FastAPI 的 `search_sop` 工具执行。
+- **用户确认建单：** 草稿卡片读取数据库记录；用户点击确认后，将完整确认短语作为新消息送入固定建单分支。固定分支执行正式建单，事务和唯一约束保证重复确认返回同一工单。
 - **工单处理闭环：** 操作员独立登录，按 `open → processing → resolved → closed` 推进状态并保存事件；预期状态不一致时拒绝覆盖。用户工单页直接查询最新记录。
 - **会话与流式交互：** FastAPI 同源网关保存服务密钥、校验匿名浏览器会话与操作员角色，React 通过 SSE 展示回复并在结束后回读实际草稿和工单。
 
@@ -59,7 +61,7 @@ Copy-Item .env.example .env
 .\start-local.ps1 -Install
 ```
 
-不要用示例文件覆盖已有的私有 `.env`。本机初始化会生成 Dify 管理账号、工具密钥和操作员口令，导入并发布本地 Agent，并显式检查或构建 SOP 索引。
+已有 `.env` 时，直接补充所需的模型密钥。本机初始化会生成 Dify 管理账号、工具密钥和操作员口令，导入并发布本地 Agent，并显式检查或构建 SOP 索引。
 
 | 入口 | 本机地址 |
 | --- | --- |
@@ -69,7 +71,7 @@ Copy-Item .env.example .env
 | 业务健康检查 | http://127.0.0.1:8020/health |
 | Milvus SDK 服务 | http://127.0.0.1:19530 |
 
-**Dify 账号和操作员口令：** 启动后查看本机 `dify/local/selfhost/本机访问说明.txt`。凭证和私有配置不随仓库发布。
+**Dify 账号和操作员口令：** 启动后查看本机 `dify/local/selfhost/本机访问说明.txt`。账号、口令和服务密钥统一保存在本机配置目录。
 
 日常管理：
 
@@ -85,10 +87,10 @@ Copy-Item .env.example .env
 
 1. 在用户工作台输入：“查询 JD2026003 的冷链温度异常，检索处理 SOP，给出文件和章节依据，并准备工单草稿，暂时不要建单。”
 2. 核对订单快照、制度依据和数据库草稿卡片，再点击“确认并创建工单”。
-3. 使用本机操作员口令登录，依次受理、解决和关闭这张模拟工单，填写处理备注。
+3. 使用本机操作员口令登录，依次受理、解决和关闭工单，填写处理备注。
 4. 返回“我的工单”，查看最新状态及四条处理事件；也可使用完整工单号在聊天中查询。
 
-只有模型文字、没有数据库草稿卡片时，不能把回复当成已准备好或已创建工单。匿名身份依赖当前浏览器 Cookie，清除 Cookie 后不能按企业账号方式找回。
+草稿卡片直接读取数据库记录，确认结果与处理事件同步保存；浏览器 Cookie 用于关联会话和工单。
 
 ## 测试与验证
 
@@ -117,7 +119,14 @@ cd ..
 .venv\Scripts\python.exe evaluation/local_acceptance.py
 ```
 
-固定的 35 道检索开发题中，原整篇 BM25 的 Top-1 来源命中为 **28/35**，章节混合检索为 **33/35**，两者 Top-3 均为 **35/35**。这是来源命中，不是回答准确率或独立盲测；迁移前 Qdrant 同样为 33/35，不能将变化归因于换库。逐题对比见[检索报告](evaluation/results/hybrid_retrieval.json)，已知失败与修复见[模型失败记录](evaluation/results/hybrid_failure_history.json)、[本机部署排障](evaluation/results/local_initialization_history.json)和[依赖/模板一致性修复](evaluation/results/dependency_alignment.json)。
+在 35 道固定检索开发题上，整篇 BM25 与章节混合检索的来源命中结果如下。
+
+| 检索方式 | Top-1 来源命中 | Top-3 来源命中 |
+| --- | --- | --- |
+| 整篇 BM25 | 28/35 | 35/35 |
+| 章节 BM25 + Milvus + RRF | 33/35 | 35/35 |
+
+逐题结果、召回列表和评分口径见[检索报告](evaluation/results/hybrid_retrieval.json)。
 
 ## 主要目录
 
@@ -131,13 +140,12 @@ cd ..
 | `evaluation/`、`tests/` | 检索对比、真实链路验收与程序回归 |
 | `output/playwright/` | 实际本机页面与下线证明截图 |
 
-## 项目边界与历史版本
+## 版本与开发文档
 
-当前是模拟业务上的个人项目，复用 Dify 的 Agent 执行循环，借助 AI 完成实现与验证；没有企业账号与订单 ACL、真实承运商接入、分布式检索、高可用或容量压测结论。
-
-旧 Railway 服务已下线，项目配置与 SQLite 数据卷保留；旧云端链接不作为当前演示入口。下线证据见[Railway 停用记录](evaluation/results/railway_shutdown.json)。
-
-V1 固定工作流、原云端部署与各阶段验收保留在[历史 README](docs/历史版本/README演进存档_20261019.md)及相应报告中；当前运行统一从本页和[本地运行说明](docs/本地运行说明.md)开始。
+- [本地运行说明](docs/本地运行说明.md)：环境配置、启动入口、数据持久化与排障。
+- [Milvus 迁移说明](docs/Milvus迁移说明.md)：集合结构、索引版本、混合检索与降级机制。
+- [Agent 配置与联调](dify/Agent升级与联调.md)：工具绑定、工作流节点与工单流程。
+- [版本演进记录](docs/历史版本/README演进存档_20261019.md)：固定工作流、全栈页面和本机部署的演进过程。
 
 ## License
 

@@ -126,7 +126,7 @@ def build(provider_id="REPLACE_API_PROVIDER_ID", model_provider="", model_name="
                     {"id": "ticket_query", "case_id": "ticket_query", "logical_operator": "and", "conditions": [
                         {"id": "ticket-query-condition", "variable_selector": ["confirmation_gate", "is_ticket_query"],
                          "varType": "string", "comparison_operator": "is", "value": "yes"}]}]),
-        node("logistics_agent", "agent", "物流工具调用智能体", 900, 500,
+        node("logistics_agent", "agent", "物流异常处理智能助手", 900, 500,
              agent_strategy_provider_name="langgenius/agent/agent", agent_strategy_name="function_calling",
              agent_strategy_label="FunctionCalling", plugin_unique_identifier=plugin_id,
              tool_node_version="2", output_schema={},
@@ -177,7 +177,7 @@ def build(provider_id="REPLACE_API_PROVIDER_ID", model_provider="", model_name="
                 "data": {"sourceType": by_id[source]["data"]["type"], "targetType": by_id[target]["data"]["type"],
                          "isInIteration": False, "isInLoop": False}}
     features = copy.deepcopy(yaml.safe_load((ROOT / "dify/logisupply_chatflow.dify.yml").read_text(encoding="utf-8"))["workflow"]["features"])
-    features["opening_statement"] = "我是物流工具调用助手，可查询历史演示订单、检索 SOP 并生成异常工单草稿。创建工单需要你发送完整确认短语。"
+    features["opening_statement"] = "我是物流异常处理智能助手，可以查询订单与轨迹、检索 SOP 并准备工单草稿。请核对草稿后确认创建工单。"
     features["suggested_questions"] = ["查询 JD2026001 的订单状态", "JD2026002 延迟怎么处理？帮我准备工单", "冷链温度报警应该如何处理？"]
     env = [{"id": str(uuid5(NAMESPACE_URL, "logisupply/" + name)), "name": name,
             "selector": ["env", name], "value_type": kind, "value": value, "description": description}
@@ -186,7 +186,7 @@ def build(provider_id="REPLACE_API_PROVIDER_ID", model_provider="", model_name="
                ("LOGISUPPLY_TOOL_API_KEY", "secret", "", "与后端一致的工具密钥；不配置操作员密钥")]]
     dependencies = ([{"current_identifier": None, "type": "marketplace", "value": {
         "marketplace_plugin_unique_identifier": plugin_id}}] if plugin_id else [])
-    dsl = {"app": {"name": "物流异常处理智能体 V2", "description": "Agent 自主选工具 + 用户确认创建工单 + SQLite 历史演示数据",
+    dsl = {"app": {"name": "物流异常处理智能助手", "description": "订单查询、SOP 混合检索、用户确认建单与工单进度跟踪",
                    "icon": "🚚", "icon_background": "#E4FBCC", "mode": "advanced-chat", "use_icon_as_answer_icon": False},
            "kind": "app", "version": "0.3.1", "dependencies": dependencies,
            "workflow": {"conversation_variables": [], "environment_variables": env, "features": features,

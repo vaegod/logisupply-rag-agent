@@ -1,0 +1,46 @@
+{
+  "checked_at": "2026-10-19T10:26:47.451927+00:00",
+  "project_name": "物流异常处理智能助手",
+  "repository": "https://github.com/vaegod/logisupply-rag-agent",
+  "branch": "main",
+  "updated": [
+    "README and GitHub About",
+    "React page title, heading, sidebar branding and assistant label",
+    "Dify public DSL, local application and system instruction identity",
+    "current editable resume and single-page PDF",
+    "current project guide and interview material"
+  ],
+  "checks": {
+    "backend_tests": 79,
+    "frontend_tests": 3,
+    "frontend_build": "passed",
+    "offline_baseline": "passed",
+    "readme_relative_links": 17,
+    "published_local_dify_name": "物流异常处理智能助手",
+    "desktop_browser_title": "物流异常处理智能助手 · LogiSupply",
+    "mobile_viewport_width": 390,
+    "mobile_scroll_width": 375,
+    "mobile_heading_actions_overlap": false,
+    "resume_pages": 1,
+    "resume_font_pt": 10.25,
+    "resume_fill_percent": 96.3,
+    "resume_changes": "project name and HTML title only"
+  },
+  "browser_flow": {
+    "proposal_id": "P-f3aa87d97a3438b5",
+    "ticket_id": "T-46598662c672928a",
+    "final_status": "closed",
+    "events": [
+      "open",
+      "processing",
+      "resolved",
+      "closed"
+    ],
+    "sop_citation": "03_冷链运输规范.md / 冷链运输规范 / 4. 温度异常处理"
+  },
+  "screenshots": [
+    "output/playwright/assistant-home.png",
+    "output/playwright/assistant-rag-draft.png",
+    "output/playwright/assistant-ticket-closed.png"
+  ]
+}

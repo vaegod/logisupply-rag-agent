@@ -126,7 +126,7 @@ def main():
         config["tool_provider_id"] = tool_id
         config_path.write_text(json.dumps(config, indent=2), encoding="utf-8")
         dsl, _ = build(tool_id, provider, "Qwen/Qwen3-14B", required["langgenius/agent"], TOOL_BASE)
-        dsl["app"]["name"] = "物流异常处理助手（本地 Milvus）"
+        dsl["app"]["name"] = "物流异常处理智能助手"
         for variable in dsl["workflow"]["environment_variables"]:
             if variable["name"] == "LOGISUPPLY_TOOL_API_KEY":
                 variable["value"] = config["tool_key"]

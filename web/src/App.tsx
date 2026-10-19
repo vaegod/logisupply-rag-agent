@@ -509,7 +509,7 @@ export default function App() {
         ) : (
           <>
             <span className="loading-ring" />
-            <p>正在连接物流工作台…</p>
+            <p>正在连接物流异常处理智能助手…</p>
           </>
         )}
       </div>
@@ -536,13 +536,13 @@ export default function App() {
             <Package size={23} strokeWidth={1.6} />
           </span>
           <span>
-            LogiSupply<small>智能物流服务平台</small>
+            LogiSupply<small>物流异常处理智能助手</small>
           </span>
         </a>
         <div className="workspace-label">
           <span className="workspace-avatar">L</span>
           <div>
-            物流服务工作台<small>个人演示工作空间</small>
+            物流协作空间<small>个人演示工作空间</small>
           </div>
           <span className="demo-tag">演示</span>
         </div>
@@ -673,7 +673,7 @@ export default function App() {
           <div className="chat-page">
             <div className="chat-heading">
               <div>
-                <h1>智能助手</h1>
+                <h1>物流异常处理智能助手</h1>
                 <p>查询物流信息，协助处理订单异常</p>
               </div>
               <div className="heading-actions">
@@ -701,7 +701,7 @@ export default function App() {
                     <Sparkles size={17} />
                   </div>
                   <div>
-                    <strong>物流服务助手</strong>
+                    <strong>物流异常处理智能助手</strong>
                     <small>订单查询 · SOP 检索 · 异常工单</small>
                   </div>
                   <span className="assistant-status">

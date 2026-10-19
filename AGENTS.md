@@ -102,3 +102,7 @@ python rag_eval.py
 ## 本机部署要求（用户2026-10-19最新确认）
 
 默认运行方式改为本机Dify＋FastAPI/React＋Milvus，保留经典Agent/Function Calling。用户允许Qwen和Embedding API，不要求离线模型权重。不得将Dify Cloud或Railway地址作为当前运行依赖，也不为本任务新建云端资源。部署入口为start-local.ps1，Dify配置由deploy/dify/prepare.py生成，账号和服务密钥只写入被忽略的dify/local/selfhost。HTTP仅在显式本地模式下允许回环或指定容器Dify端点，不能为了本地联调普遍放开不加密远程地址。旧云端代码与历史验收保留为对照，不把它们当成本轮本地页面闭环证据。只有真实本地Dify调用本地工具并与本地SQLite同库时，才能声明本地全链路通过。
+
+## 项目命名与公开介绍（2026-10-19）
+
+当前统一项目名称为“物流异常处理智能助手”，LogiSupply为英文标识，GitHub仓库地址保持vaegod/logisupply-rag-agent。对外README与About直接介绍功能、技术、运行步骤和明确命名的评测指标，避免防御性解释。归档报告按原版本保留；业务确认、权限和事实校验约束继续由程序与提示词执行。
