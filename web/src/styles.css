@@ -548,7 +548,7 @@ h2 {
   display: flex;
   flex-direction: column;
   height: calc(100dvh - 229px);
-  min-height: 550px;
+  min-height: 440px;
 }
 .chat-panel-top {
   display: flex;
@@ -1955,7 +1955,7 @@ td code {
     grid-template-columns: minmax(0, 1fr) 300px;
   }
   .chat-panel {
-    min-height: 650px;
+    min-height: 440px;
   }
   .chat-welcome {
     padding-top: 55px;
@@ -2084,7 +2084,7 @@ td code {
     width: calc(100% - 205px);
   }
   .chat-panel {
-    min-height: 550px;
+    min-height: 440px;
   }
   .chat-welcome {
     padding-top: 35px;

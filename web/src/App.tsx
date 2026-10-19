@@ -429,6 +429,10 @@ export default function App() {
   async function send(query: string) {
     query = query.trim();
     if (!query || busyRef.current || loadingConversation) return;
+    const mentioned = boot?.orders.filter((order) =>
+      query.toUpperCase().includes(order.order_id),
+    );
+    if (mentioned?.length === 1) setOrderId(mentioned[0].order_id);
     busyRef.current = true;
     setBusy(true);
     setError("");

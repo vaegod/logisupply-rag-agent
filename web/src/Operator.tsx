@@ -196,7 +196,7 @@ export default function Operator({
                 {labels[s]}
                 <span className="stat-index">0{i + 1}</span>
               </span>
-              <strong>{list?.counts[s] ?? "—"}</strong>
+              <strong>{list ? (list.counts[s] ?? 0) : "—"}</strong>
               <small>
                 {
                   [
