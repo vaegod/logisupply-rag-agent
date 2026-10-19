@@ -1,0 +1,23 @@
+{
+  "scope": "Visual redesign and interaction smoke checks; existing business logic unchanged",
+  "passed": true,
+  "deployed_commit": "dbbd5fc2536bf7a624dae66601c3379a9403a013",
+  "deployment_id": "38f312f0-ddf5-45c3-97de-a867247f2fbb",
+  "url": "https://logisupply-api-production.up.railway.app/",
+  "checks": [
+    "TypeScript and Vite build passed",
+    "3 frontend stream tests passed",
+    "Cloud real Dify order/tracking query returned facts for JD2026001",
+    "Order shortcut filled the composer and updated selected order",
+    "Operator login and real list of 9 existing tickets displayed",
+    "Existing ticket T-2a94b5da13f1814c still closed with 4 events",
+    "Escape closed the operator detail panel",
+    "User ticket page showed existing ticket and timeline",
+    "Operator logged out after testing"
+  ],
+  "layout_report": "redesign_layout.json",
+  "limits": [
+    "Mobile verification is static DOM rendering, not device interaction",
+    "No new backend tests or new full ticket lifecycle run in this visual-only update; previous lifecycle evidence remains scoped to its original version"
+  ]
+}

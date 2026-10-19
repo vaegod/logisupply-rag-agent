@@ -1,0 +1,21 @@
+{
+  "scope": "Local React DOM static layout render, no mobile interaction claim",
+  "results": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "composerBottom": 837.40625,
+      "viewportHeight": 900,
+      "passed": true
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "scrollWidth": 390,
+      "composerBottom": 802.375,
+      "viewportHeight": 844,
+      "passed": true
+    }
+  ]
+}
