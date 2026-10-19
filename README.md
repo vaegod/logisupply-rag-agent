@@ -19,7 +19,7 @@
 
 操作员独立处理异常工单，用户页面同步展示工单状态、解决说明与处理事件。
 
-![本机工单关闭与重启后的完整处理记录](output/playwright/assistant-ticket-closed.png)
+![工单关闭与完整处理记录](output/playwright/assistant-ticket-closed.png)
 
 项目内置四条演示订单与十份物流 SOP，可在本机体验查询、确认建单、处理和归档流程。
 
