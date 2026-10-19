@@ -37,22 +37,22 @@ import Operator from "./Operator";
 type View = "chat" | "tickets" | "operator";
 const suggestions = [
   {
-    title: "查一查订单",
+    title: "查询订单与轨迹",
     text: "查询 JD2026002 的订单状态和物流轨迹。",
     icon: Package,
-    desc: "查看当前节点与已知轨迹",
+    desc: "查看 JD2026002 的运输状态",
   },
   {
-    title: "处理物流异常",
+    title: "分析异常并准备工单",
     text: "查询 JD2026003 的温度异常情况，检索处理规范，并帮我准备异常工单。",
     icon: ShieldCheck,
-    desc: "核实问题，准备处理工单",
+    desc: "核实冷链异常，生成待确认草稿",
   },
   {
-    title: "了解处理规范",
+    title: "检索物流处理规范",
     text: "货物外包装破损应该怎么处理？请检索 SOP 并注明来源。",
     icon: ClipboardList,
-    desc: "按 SOP 获取处理建议",
+    desc: "查询货物破损 SOP 与处理建议",
   },
 ];
 
@@ -73,10 +73,10 @@ function OrderContext({
   return (
     <section className="order-context">
       <div className="section-top">
-        <span className="eyebrow">ORDER SNAPSHOT</span>
+        <span className="eyebrow">订单信息</span>
         <Box size={17} />
       </div>
-      <h3>订单上下文</h3>
+      <p className="context-description">选择一笔订单查看已知信息</p>
       <label className="sr-only" htmlFor="demo-order">
         选择演示订单
       </label>
@@ -105,17 +105,17 @@ function OrderContext({
               {order.exception_type}
             </span>
           </div>
-          <div className="route-sketch">
-            <div className="route-point start" />
-            <div className="route-line" />
-            <Truck size={23} />
-            <div className="route-line faded" />
-            <div className="route-point end" />
+          <div className="current-node">
+            <Truck size={19} />
+            <div>
+              <span>当前物流节点</span>
+              <strong>{order.current_node}</strong>
+            </div>
           </div>
           <dl>
             <div>
-              <dt>已知节点</dt>
-              <dd>{order.current_node}</dd>
+              <dt>商品类型</dt>
+              <dd>{order.product_type}</dd>
             </div>
             <div>
               <dt>历史预计送达</dt>
@@ -133,7 +133,7 @@ function OrderContext({
               onAsk(`查询 ${order.order_id} 的订单状态和物流轨迹。`)
             }
           >
-            让助手查询这笔订单
+            查询此订单的物流轨迹
             <ArrowUpRight size={16} />
           </button>
         </>
@@ -213,10 +213,7 @@ function UserTickets({ onError }: { onError: (message: string) => void }) {
     <div className="user-ticket-page">
       <header className="page-heading">
         <div>
-          <span className="eyebrow">YOUR REQUESTS</span>
-          <h1>
-            每一步进展，都看得见<span className="heading-dot">.</span>
-          </h1>
+          <h1>我的工单</h1>
           <p>查看当前浏览器创建的工单与完整处理记录。</p>
         </div>
         <button
@@ -306,6 +303,17 @@ export default function App() {
           : "chat",
     ),
     [navOpen, setNavOpen] = useState(false);
+  const [contextOpen, setContextOpen] = useState(false);
+  useEffect(() => {
+    const closePanels = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setContextOpen(false);
+        setNavOpen(false);
+      }
+    };
+    window.addEventListener("keydown", closePanels);
+    return () => window.removeEventListener("keydown", closePanels);
+  }, []);
   const [cid, setCid] = useState<string | null>(null),
     [messages, setMessages] = useState<Message[]>([]),
     [detail, setDetail] = useState<ConversationDetail | null>(null);
@@ -393,6 +401,7 @@ export default function App() {
   }, [ticketId, refreshTicket]);
   function navigate(next: View) {
     if (busyRef.current) return;
+    setContextOpen(false);
     setView(next);
     setNavOpen(false);
     history.pushState(
@@ -527,17 +536,17 @@ export default function App() {
             <Package size={23} strokeWidth={1.6} />
           </span>
           <span>
-            LogiSupply<small>物流协作工作台</small>
+            LogiSupply<small>智能物流服务平台</small>
           </span>
         </a>
         <div className="workspace-label">
           <span className="workspace-avatar">L</span>
           <div>
-            物流演示空间<small>PERSONAL WORKSPACE</small>
+            物流服务工作台<small>个人演示工作空间</small>
           </div>
-          <span className="demo-tag">DEMO</span>
+          <span className="demo-tag">演示</span>
         </div>
-        <span className="nav-caption">工作空间</span>
+        <span className="nav-caption">业务应用</span>
         <nav aria-label="主导航">
           <button
             className={view === "chat" ? "active" : ""}
@@ -597,7 +606,7 @@ export default function App() {
           <div className="help-note">
             <CircleHelp size={17} />
             <div>
-              一个完整的处理闭环<small>查询 · 确认 · 跟进 · 归档</small>
+              业务处理流程<small>查询 → 确认 → 处理 → 归档</small>
             </div>
           </div>
           <div className="identity">
@@ -639,7 +648,7 @@ export default function App() {
               target="_blank"
               rel="noreferrer"
             >
-              Dify 原版
+              原版聊天页
               <ExternalLink size={13} />
             </a>
           </div>
@@ -664,19 +673,26 @@ export default function App() {
           <div className="chat-page">
             <div className="chat-heading">
               <div>
-                <span className="eyebrow">LOGISTICS COPILOT</span>
-                <h1>
-                  智能物流助手<span className="heading-dot">.</span>
-                </h1>
+                <h1>智能助手</h1>
+                <p>查询物流信息，协助处理订单异常</p>
               </div>
-              <button
-                className="secondary-button"
-                disabled={busy || loadingConversation}
-                onClick={newChat}
-              >
-                <Plus size={16} />
-                新对话
-              </button>
+              <div className="heading-actions">
+                <button
+                  className="secondary-button context-toggle"
+                  onClick={() => setContextOpen(true)}
+                >
+                  <Box size={16} />
+                  订单信息
+                </button>
+                <button
+                  className="secondary-button"
+                  disabled={busy || loadingConversation}
+                  onClick={newChat}
+                >
+                  <Plus size={16} />
+                  新对话
+                </button>
+              </div>
             </div>
             <div className="chat-layout">
               <section className="chat-panel" aria-label="用户聊天">
@@ -685,10 +701,13 @@ export default function App() {
                     <Sparkles size={17} />
                   </div>
                   <div>
-                    <strong>LogiSupply 助手</strong>
-                    <small>查询事实，协助处理物流异常</small>
+                    <strong>物流服务助手</strong>
+                    <small>订单查询 · SOP 检索 · 异常工单</small>
                   </div>
-                  <span className="online-dot" />
+                  <span className="assistant-status">
+                    <i />
+                    {boot.chat_available ? "可用" : "待配置"}
+                  </span>
                 </div>
                 <div
                   className="message-scroll"
@@ -698,20 +717,13 @@ export default function App() {
                   {messages.length === 0 && !loadingConversation && (
                     <div className="chat-welcome">
                       <div className="welcome-symbol">
-                        <Package size={37} strokeWidth={1.25} />
-                        <span className="welcome-star">✳</span>
+                        <Sparkles size={27} />
                       </div>
-                      <span className="eyebrow">从问题到处理</span>
-                      <h2>
-                        每一次异常，
-                        <br />
-                        都有下一步。
-                      </h2>
+                      <h2>你好，需要处理什么物流问题？</h2>
                       <p>
-                        告诉我订单号和遇到的问题。
-                        <br />
-                        我会核实已知信息，查找规范，并帮你准备工单。
+                        输入订单号或描述问题，助手会查询相关信息并提供处理建议。
                       </p>
+                      <div className="quick-start-label">快捷开始</div>
                       <div className="suggestions">
                         {suggestions.map(
                           ({ title, text, icon: Icon, desc }) => (
@@ -729,6 +741,38 @@ export default function App() {
                             </button>
                           ),
                         )}
+                      </div>
+                      <div className="demo-order-shortcuts">
+                        <div>
+                          <Package size={15} />
+                          <strong>可用的演示订单</strong>
+                          <span>点击填入订单号</span>
+                        </div>
+                        <div className="demo-order-chips">
+                          {boot.orders.map((order) => (
+                            <button
+                              key={order.order_id}
+                              onClick={() => {
+                                setOrderId(order.order_id);
+                                setInput(
+                                  `查询 ${order.order_id} 的订单状态和物流轨迹。`,
+                                );
+                                document.getElementById("chat-input")?.focus();
+                              }}
+                            >
+                              <code>{order.order_id}</code>
+                              <span
+                                className={
+                                  order.exception_type === "无异常"
+                                    ? "normal"
+                                    : "exception"
+                                }
+                              >
+                                {order.status}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -800,6 +844,7 @@ export default function App() {
                         onClick={() => {
                           setTicket(t);
                           setTicketId(t.ticket_id);
+                          setContextOpen(true);
                         }}
                       >
                         <span className="inline-ticket-icon">
@@ -867,7 +912,8 @@ export default function App() {
                         !boot.chat_available
                       }
                     >
-                      <Send size={17} />
+                      <Send size={16} />
+                      <span>发送</span>
                     </button>
                   </div>
                 </form>
@@ -876,7 +922,27 @@ export default function App() {
                   为准
                 </p>
               </section>
-              <aside className="context-column">
+              {contextOpen && (
+                <button
+                  className="context-scrim"
+                  aria-label="关闭订单信息"
+                  onClick={() => setContextOpen(false)}
+                />
+              )}
+              <aside
+                className={`context-column ${contextOpen ? "context-open" : ""}`}
+                aria-label="订单与工单信息"
+              >
+                <div className="context-drawer-top">
+                  <strong>订单与工单信息</strong>
+                  <button
+                    className="icon-button"
+                    aria-label="收起订单信息"
+                    onClick={() => setContextOpen(false)}
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
                 {ticket ? (
                   <div className="context-ticket">
                     <button
@@ -904,8 +970,7 @@ export default function App() {
                       disabled={busy || !boot.chat_available}
                     />
                     <section className="how-it-works">
-                      <span className="eyebrow">HOW IT WORKS</span>
-                      <h3>有确认，才有下一步</h3>
+                      <h3>异常处理流程</h3>
                       <ol>
                         <li>
                           <span>01</span>

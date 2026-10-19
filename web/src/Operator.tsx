@@ -8,6 +8,8 @@ import {
   LogOut,
   Search,
   ShieldCheck,
+  Clock3,
+  Archive,
 } from "lucide-react";
 import { api, ApiError } from "./api";
 import type { Status, Ticket, TicketList } from "./types";
@@ -35,6 +37,16 @@ export default function Operator({
   const selection = useRef(selected),
     listRequest = useRef(0);
   selection.current = selected;
+  useEffect(() => {
+    const closeDetail = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelected(null);
+        setTicket(null);
+      }
+    };
+    window.addEventListener("keydown", closeDetail);
+    return () => window.removeEventListener("keydown", closeDetail);
+  }, []);
   const refreshList = useCallback(async () => {
     const requestId = ++listRequest.current;
     try {
@@ -116,16 +128,31 @@ export default function Operator({
     return (
       <div className="login-layout">
         <div className="login-story">
-          <span className="eyebrow">OPERATIONS / 运营协作</span>
-          <h1>
-            让异常有回应，
-            <br />
-            让处理有记录。
-          </h1>
-          <p>从受理到关闭，每一步都清晰可追踪。</p>
+          <span className="login-product">
+            <ClipboardCheck size={24} />
+            LogiSupply Operations
+          </span>
+          <h1>操作员工作台</h1>
+          <p>集中查看物流异常工单，跟进处理进度，保留完整的业务处理记录。</p>
           <div className="login-flow">
-            受理 <ArrowRight size={18} /> 处理 <ArrowRight size={18} /> 解决{" "}
-            <ArrowRight size={18} /> 关闭
+            <div>
+              <Inbox size={20} />
+              <span>
+                统一受理<small>筛选、搜索并查看工单详情</small>
+              </span>
+            </div>
+            <div>
+              <ClipboardCheck size={20} />
+              <span>
+                协同处理<small>更新状态并记录每次处理动作</small>
+              </span>
+            </div>
+            <div>
+              <Archive size={20} />
+              <span>
+                完整归档<small>按时间线追踪处理结果</small>
+              </span>
+            </div>
           </div>
           <ClipboardCheck
             size={140}
@@ -170,11 +197,8 @@ export default function Operator({
     <div className="operator-page">
       <header className="page-heading">
         <div>
-          <span className="eyebrow">OPERATIONS CENTER</span>
-          <h1>
-            工单处理工作台<span className="heading-dot">.</span>
-          </h1>
-          <p>及时响应每一个异常，记录每一次处理。</p>
+          <h1>工单管理</h1>
+          <p>查看异常工单、推进处理进度与记录处理结果。</p>
         </div>
         <button className="secondary-button" onClick={() => void logout()}>
           <LogOut size={16} />
@@ -194,7 +218,16 @@ export default function Operator({
             >
               <span>
                 {labels[s]}
-                <span className="stat-index">0{i + 1}</span>
+                <span className="stat-icon">
+                  {
+                    [
+                      <Inbox size={19} key="open" />,
+                      <Clock3 size={19} key="processing" />,
+                      <ClipboardCheck size={19} key="resolved" />,
+                      <Archive size={19} key="closed" />,
+                    ][i]
+                  }
+                </span>
               </span>
               <strong>{list ? (list.counts[s] ?? 0) : "—"}</strong>
               <small>
@@ -342,6 +375,16 @@ export default function Operator({
             </div>
           )}
         </section>
+        {selected && (
+          <button
+            className="operator-detail-scrim"
+            aria-label="关闭工单详情"
+            onClick={() => {
+              setSelected(null);
+              setTicket(null);
+            }}
+          />
+        )}
         {selected && (
           <aside className="operator-detail-panel">
             <button

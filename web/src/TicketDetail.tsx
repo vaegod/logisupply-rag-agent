@@ -71,7 +71,7 @@ export default function TicketDetail({
   return (
     <section className="ticket-detail" aria-label="工单详情">
       <div className="section-top">
-        <span className="eyebrow">TICKET / 工单详情</span>
+        <span className="eyebrow">工单详情</span>
         <button
           className="icon-button"
           aria-label="刷新工单详情"
