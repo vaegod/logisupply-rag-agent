@@ -1,4 +1,4 @@
-"""Same-origin browser gateway. Dify secrets and internal user IDs never leave it.
+"""Same-origin gateway. Secrets stay server-side; clients cannot choose user IDs.
 
 Anonymous browser sessions are a demo identity, not enterprise order ownership.
 Conversation ownership is persisted before streaming; Dify IDs are accepted only

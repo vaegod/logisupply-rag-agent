@@ -1,0 +1,16 @@
+{
+  "scope": "React V3 delivery",
+  "deployed_commit": "688d6cb07eb47f460920c2a52f84cd9f549e8ed4",
+  "railway_deployment_id": "5f25fdbd-b933-4d37-bc5d-557947be30c8",
+  "frontend_url": "https://logisupply-api-production.up.railway.app/",
+  "operator_url": "https://logisupply-api-production.up.railway.app/operator",
+  "python_tests_passed": 49,
+  "frontend_stream_tests_passed": 3,
+  "typescript_and_vite_build": "passed",
+  "real_gateway_acceptance": "web_cloud_acceptance.json",
+  "real_browser_acceptance": "web_browser_acceptance.json",
+  "layout_acceptance": "web_layout_acceptance.json",
+  "tracked_and_built_artifact_secret_check": "passed",
+  "secret_files_committed": false,
+  "boundary": "Anonymous demo identity; historical order snapshots, simulated operator handling; no enterprise account or carrier integration."
+}

@@ -51,3 +51,16 @@ Dify API 的 `user` 外部标识与 `sys.user_id` 内部标识不同。网关按
 订单仍是历史演示快照；处理动作是模拟业务。单副本 SQLite，无生产 SLA。访客聊天每会话 10 分钟 15 次、全站 24 小时 300 次，同时最多 4 个流式请求；操作员口令失败 5 次后限流 10 分钟。限流用于控制演示成本，不代表完整防滥用体系。
 
 程序测试对 Dify 使用可控 MockTransport 验证身份差异和故障分支；实际云端与浏览器验收另外记录，不能互相替代。
+
+## 已部署验收（2026-10-19）
+
+- 在线入口：https://logisupply-api-production.up.railway.app/ ，操作员页为 `/operator`。
+- 运行代码固定在 `688d6cb07eb47f460920c2a52f84cd9f549e8ed4`；后续提交仅补充验收材料与注释。
+- 49 项 Python 测试、3 项前端流式解析测试、TypeScript 与 Vite 构建通过。
+- `evaluation/results/web_cloud_acceptance.json`：真实网关 → Dify → 工单库，重复确认、权限隔离、处理至关闭、旧状态冲突、退出登录均验证；API 验收工单 `T-836e162027693427`。
+- `evaluation/results/web_browser_acceptance.json`：实际 React 页面聊天、点击确认、操作员登录/搜索/处理、用户进度同步；工单 `T-2a94b5da13f1814c` 已关闭，4 条事件。处理中经过一次新部署，访客/操作员会话与工单均恢复成功。
+- `evaluation/results/web_cloud_acceptance_initial.json` 保留首轮验收记录：脚本错误地假设 V2 持久化探针仍处于 processing，而该工单此前收尾已关闭。核实旧工单和 4 条事件仍完整后修正验收参照，首轮生成的模拟工单也已关闭。
+- `evaluation/results/web_layout_acceptance.json`：1440px / 390px 的静态 React DOM 渲染均无横向溢出，已检查截图；移动端交互未单独进行真实设备验收。
+- 截图 `screenshots/10_*`、`12_*` 至 `15_*` 来自实际云端页面；`11_*` 是响应式静态渲染检查。
+
+本机操作员访问口令位于 git 忽略目录 `dify/local/操作员访问说明.txt`，不随仓库发布。正式服务的 Dify 密钥仅存在服务端环境变量中。

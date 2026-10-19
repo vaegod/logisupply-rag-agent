@@ -1,0 +1,33 @@
+{
+  "scope": "V3 actual HTTPS gateway, published Dify and existing cloud SQLite",
+  "timestamp_utc": "2026-10-19T05:47:48.990601+00:00",
+  "origin": "https://logisupply-api-production.up.railway.app",
+  "passed": false,
+  "steps": [
+    "HTTPS frontend routes and secure anonymous session",
+    "Dify tool-generated draft linked despite external/internal user-ID difference",
+    "Exact user confirmation and duplicate-confirmation idempotency"
+  ],
+  "turns": [
+    {
+      "query": "前端联调模拟验收：查询 JD2026003 的温度异常，检索 SOP 并准备工单草稿，暂时不要建单。",
+      "answer": "\n根据查询结果，订单 JD2026003 当前状态为“异常”，异常类型为“温度异常报警”，最新更新时间为 2026-05-03 11:20:00，当前节点为“冷链仓储中心”，预计送达时间为 2026-05-04。\n\n制度依据：\n- 《03_冷链运输规范.md》中规定，冷链订单一旦出现温度异常，原则上应优先升级处理，涉及医药、婴幼儿食品或高价值生鲜商品的订单，必须保留完整温控记录并走人工复核流程。\n- 《10_异常工单升级规则.md》中指出，出现温度异常应升级为严重异常，并通知值班运营和质量负责人。\n\n下一步：\n- 请发送确认短语：“确认创建工单 P-e90bdb82e2d1684c”以创建异常工单。",
+      "seconds": 14.23
+    },
+    {
+      "query": "确认创建工单 P-e90bdb82e2d1684c",
+      "answer": "工单已创建\n工单号：T-faaab3160a8dc6ca\n订单号：JD2026003\n状态：open\n摘要：查询 JD2026003 的温度异常\n可继续询问工单进度；处理状态由运营人员更新。",
+      "seconds": 1.56
+    },
+    {
+      "query": "确认创建工单 P-e90bdb82e2d1684c",
+      "answer": "工单已存在，本次未重复创建\n工单号：T-faaab3160a8dc6ca\n订单号：JD2026003\n状态：open\n摘要：查询 JD2026003 的温度异常\n可继续询问工单进度；处理状态由运营人员更新。",
+      "seconds": 1.74
+    }
+  ],
+  "proposal_id": "P-e90bdb82e2d1684c",
+  "ticket_id": "T-faaab3160a8dc6ca",
+  "conversation_id": "4927605c-cb57-493c-844b-c25854d81da3",
+  "error_type": "AssertionError",
+  "failure_explanation": "Acceptance reference expected a historical processing state; V2 cleanup had already closed this legacy ticket before V3 deployment. Actual legacy ticket and all four events are intact."
+}

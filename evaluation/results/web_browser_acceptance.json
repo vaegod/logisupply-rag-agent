@@ -1,0 +1,28 @@
+{
+  "scope": "Actual deployed React UI through browser interactions",
+  "ticket_id": "T-2a94b5da13f1814c",
+  "order_id": "JD2026004",
+  "draft_id": "P-f47ca88e16243757",
+  "steps": [
+    "SSE chat generated a draft from live Dify tools",
+    "Database-backed confirmation card displayed",
+    "Confirmation button created the live ticket",
+    "User ticket page displayed open state",
+    "Operator login and exact ticket search succeeded",
+    "Operator form moved ticket from open to processing with a note",
+    "After deployment 5f25fdbd, anonymous and operator sessions survived; same processing ticket remained visible",
+    "Operator resolved and closed the same ticket; user page displayed each new state and all four events",
+    "Operator logged out after browser acceptance"
+  ],
+  "observed_statuses": [
+    "open",
+    "processing",
+    "resolved",
+    "closed"
+  ],
+  "passed": true,
+  "redeployment_id": "5f25fdbd-b933-4d37-bc5d-557947be30c8",
+  "deployed_commit": "688d6cb07eb47f460920c2a52f84cd9f549e8ed4",
+  "event_count": 4,
+  "timestamp_utc": "2026-10-19T05:53:19.046Z"
+}

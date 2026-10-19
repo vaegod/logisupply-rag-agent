@@ -1,0 +1,22 @@
+{
+  "scope": "Static rendered DOM snapshot from actual React page; viewport layout only, no mobile interaction assertion",
+  "results": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "scroll": 1440,
+      "chatVisible": true,
+      "overflow": false
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "scroll": 390,
+      "chatVisible": true,
+      "overflow": false
+    }
+  ],
+  "css_commit": "688d6cb07eb47f460920c2a52f84cd9f549e8ed4",
+  "visual_reviewed": true,
+  "limitations": "Mobile check renders a captured React DOM with built CSS at 390px; it does not assert mobile browser interaction."
+}
