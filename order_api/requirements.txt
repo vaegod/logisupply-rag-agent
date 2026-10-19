@@ -1,6 +1,6 @@
-fastapi>=0.116,<1.0
+fastapi==0.146.0
 uvicorn>=0.35,<1.0
-pydantic>=2.11,<3.0
+pydantic==2.14.1
 httpx>=0.28,<1.0
 pymilvus==3.0.2
 python-dotenv>=1.1,<2.0

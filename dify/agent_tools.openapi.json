@@ -81,6 +81,13 @@
                           "type": {
                             "type": "string",
                             "title": "Error Type"
+                          },
+                          "input": {
+                            "title": "Input"
+                          },
+                          "ctx": {
+                            "type": "object",
+                            "title": "Context"
                           }
                         },
                         "type": "object",
@@ -180,6 +187,13 @@
                           "type": {
                             "type": "string",
                             "title": "Error Type"
+                          },
+                          "input": {
+                            "title": "Input"
+                          },
+                          "ctx": {
+                            "type": "object",
+                            "title": "Context"
                           }
                         },
                         "type": "object",
@@ -286,6 +300,13 @@
                           "type": {
                             "type": "string",
                             "title": "Error Type"
+                          },
+                          "input": {
+                            "title": "Input"
+                          },
+                          "ctx": {
+                            "type": "object",
+                            "title": "Context"
                           }
                         },
                         "type": "object",
@@ -411,6 +432,13 @@
                           "type": {
                             "type": "string",
                             "title": "Error Type"
+                          },
+                          "input": {
+                            "title": "Input"
+                          },
+                          "ctx": {
+                            "type": "object",
+                            "title": "Context"
                           }
                         },
                         "type": "object",
@@ -536,6 +564,13 @@
                           "type": {
                             "type": "string",
                             "title": "Error Type"
+                          },
+                          "input": {
+                            "title": "Input"
+                          },
+                          "ctx": {
+                            "type": "object",
+                            "title": "Context"
                           }
                         },
                         "type": "object",
@@ -652,6 +687,13 @@
                           "type": {
                             "type": "string",
                             "title": "Error Type"
+                          },
+                          "input": {
+                            "title": "Input"
+                          },
+                          "ctx": {
+                            "type": "object",
+                            "title": "Context"
                           }
                         },
                         "type": "object",

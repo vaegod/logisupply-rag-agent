@@ -1,0 +1,19 @@
+{
+  "checked_at": "2026-10-19T09:50:02.804268+00:00",
+  "scope": "first GitHub CI failure and local dependency/schema alignment",
+  "initial_commit": "17b3694b98d41bf8250832d6990fd3cb4c01cf4c",
+  "initial_run": "https://github.com/vaegod/logisupply-rag-agent/actions/runs/39232623698",
+  "failure": "One template-equality assertion: FastAPI 0.146 adds optional input/ctx fields to validation-error OpenAPI schemas; the checked-in tool file was generated under local FastAPI 0.110.2. Other 78 backend tests and frontend passed.",
+  "fix": [
+    "Pin FastAPI0.146.0 and Pydantic2.14.1, matching the already-verified running application container",
+    "Install declared dev dependencies into local venv; regenerate the checked-in OpenAPI with the same framework",
+    "Keep strict generator equality assertion; no test relaxed or skipped"
+  ],
+  "local_result": {
+    "tests": 79,
+    "failures": 0,
+    "junit": "dependency_alignment_tests.xml",
+    "offline_baseline": "passed"
+  },
+  "remote_rerun": "GitHub Actions on the follow-up commit is the authoritative remote result"
+}
